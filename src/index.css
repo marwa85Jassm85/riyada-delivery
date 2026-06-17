@@ -1,0 +1,2554 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+
+:root {
+  --primary: #0EA5E9;
+  --primary-dark: #0284C7;
+  --primary-light: #BAE6FD;
+  --secondary: #06B6D4;
+  --secondary-dark: #0891B2;
+  --gradient: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%);
+
+  --bg: #F0F9FF;
+  --bg-white: #FFFFFF;
+
+  --text-primary: #0C4A6E;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+
+  --border: #BAE6FD;
+  --border-input: #CBD5E1;
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+
+  --shadow-sm: 0 1px 3px rgba(14,165,233,0.1), 0 1px 2px rgba(14,165,233,0.06);
+  --shadow: 0 4px 20px rgba(14,165,233,0.15);
+  --shadow-lg: 0 10px 40px rgba(14,165,233,0.2);
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 20px;
+
+  --font: 'Tajawal', system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  direction: rtl;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Loading Screen ── */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient);
+  gap: 20px;
+}
+
+.loading-logo {
+  width: 90px;
+  height: 90px;
+  filter: brightness(0) invert(1);
+}
+
+.loading-title {
+  color: white;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(16px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+/* ── Login Page ── */
+.login-bg {
+  min-height: 100vh;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-logo-icon {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.login-logo-img {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 12px;
+  display: block;
+  margin-inline: auto;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.logo-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.logo-link:hover .login-logo-img {
+  transform: scale(1.08);
+  opacity: 0.85;
+}
+
+/* ── Login Footer ── */
+.login-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  margin: 2px 0 4px;
+}
+.remember-row input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.login-footer-dev {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--secondary) !important;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.login-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.login-header p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.role-section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+
+.role-btn:hover {
+  border-color: var(--primary);
+  background: #E0F2FE;
+  transform: translateY(-2px);
+}
+
+.role-btn.active {
+  border-color: var(--primary);
+  background: var(--gradient);
+  color: white;
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.role-icon { font-size: 26px; }
+
+.role-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ── Form ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--warning);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── Code Info Box ── */
+.code-info-box {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #1E40AF;
+  font-weight: 600;
+}
+
+/* ── Code Success Box ── */
+.code-success-box {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.code-success-icon { font-size: 40px; margin-bottom: 8px; }
+
+.code-success-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--success);
+  margin-bottom: 16px;
+}
+
+.code-success-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.code-success-value {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--primary-dark);
+  background: var(--bg);
+  border: 2px dashed var(--primary-light);
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  display: inline-block;
+  margin-bottom: 12px;
+  direction: ltr;
+  font-family: monospace;
+}
+
+.code-success-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  outline: none;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.error-msg {
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid var(--danger-border);
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 24px;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 8px 20px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── Dashboard Layout ── */
+.dashboard {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  background: white;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--border);
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-bar-logo {
+  font-size: 24px;
+}
+
+.top-bar-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.top-bar-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.page-content {
+  flex: 1;
+  padding: 20px 16px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Stat Cards ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.stat-card .stat-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.stat-card .stat-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ── General Card ── */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Status Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-pending   { background: #FEF3C7; color: #92400E; }
+.badge-progress  { background: #DBEAFE; color: #1E40AF; }
+.badge-delivered { background: #D1FAE5; color: #065F46; }
+
+/* ── Role-specific accent bar ── */
+.role-employee { --role-color: #0EA5E9; }
+.role-driver   { --role-color: #06B6D4; }
+.role-pharmacist { --role-color: #8B5CF6; }
+.role-admin    { --role-color: #F59E0B; }
+
+.accent-bar {
+  height: 4px;
+  background: var(--gradient);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+/* ── Day Filter ── */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: white;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background: var(--gradient);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* ── Region Dropdown Filter ── */
+.region-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.region-select-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.region-select {
+  flex: 1;
+  padding: 9px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: white;
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 34px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.region-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ── زر الانتقال لتقييم التوصيل ── */
+.btn-perf-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--primary);
+  background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(79,70,229,0.03));
+  color: var(--primary);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-perf-nav:hover { background: rgba(79,70,229,0.14); box-shadow: var(--shadow-sm); }
+.btn-perf-arrow { margin-right: auto; font-size: 18px; }
+
+/* ── صفحة تقييم التوصيل ── */
+.perf-filter-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.perf-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* بطاقة تقييم السائق */
+.driver-perf-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.driver-perf-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.driver-perf-rank {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.driver-perf-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+.driver-perf-avg-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border-radius: 10px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.driver-perf-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  text-align: center;
+  background: var(--bg);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 8px 4px;
+}
+.driver-perf-stat { display: flex; flex-direction: column; gap: 2px; }
+.driver-perf-stat-val { font-size: 13px; font-weight: 800; color: var(--text-primary); }
+.driver-perf-stat-lbl { font-size: 10px; color: var(--text-secondary); }
+
+/* ── Status Filter Bar ── */
+.status-filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.status-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: white;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.status-filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.status-filter-btn.active {
+  background: var(--status-color, var(--primary));
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.status-filter-count {
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-filter-btn:not(.active) .status-filter-count {
+  background: var(--bg);
+  color: var(--text-secondary);
+}
+
+/* ── Orders List ── */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.order-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.order-pharmacy {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.order-status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.order-invoices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.invoice-chip {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.order-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.order-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.order-meta-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Single Stat Card (filtered view) ── */
+.stat-card-single {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 32px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.stat-number-big {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 8px 0 4px;
+}
+
+.stat-label-big {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.stat-sublabel {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Range Badge ── */
+.range-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #E0F2FE, #F0F9FF);
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+.range-badge strong {
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.range-badge-icon {
+  font-size: 16px;
+}
+
+.range-badge-sep {
+  color: var(--border-input);
+  font-weight: 300;
+  margin: 0 2px;
+}
+
+/* ── Date Range Card ── */
+.date-range-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.date-range-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.date-range-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.date-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.date-field input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.date-field input[type="date"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+}
+
+.date-range-arrow {
+  font-size: 18px;
+  color: var(--text-muted);
+  padding-bottom: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Bottom Tab Bar ── */
+.bottom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 2px solid var(--border);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -4px 16px rgba(14,165,233,0.1);
+  /* iOS safe area (home indicator on iPhone X+) */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.tab-btn.active { color: var(--primary); }
+
+.tab-icon { font-size: 22px; }
+
+.tab-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Sub Page (Pharmacies / Drivers) ── */
+.sub-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sub-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sub-page-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.sub-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.btn-add {
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input {
+  width: 100%;
+  padding: 11px 16px;
+  border: 2px solid var(--border-input);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: white;
+  outline: none;
+  direction: rtl;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+}
+
+/* ── Item Cards (Pharmacies / Drivers) ── */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.item-inactive {
+  opacity: 0.55;
+}
+
+.item-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.item-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-icon:hover { background: var(--primary-light); }
+
+.badge-inactive {
+  display: inline-block;
+  margin-top: 4px;
+  background: #FEF3C7;
+  color: #92400E;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Role Badges ── */
+.badge-role {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-employee {
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+.badge-admin {
+  background: #FDF4FF;
+  color: #7E22CE;
+}
+
+/* ── Role Toggle ── */
+.role-toggle {
+  display: flex;
+  gap: 8px;
+}
+.role-toggle-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: 2px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.role-toggle-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+/* ── Modal Sheet ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+}
+
+.modal-sheet {
+  background: white;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 16px 20px max(32px, env(safe-area-inset-bottom));
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border-input);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  color: var(--danger);
+  border: 2px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+  background: var(--danger-bg);
+}
+
+.delete-confirm-box {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.delete-confirm-text {
+  font-size: 15px;
+  color: var(--danger);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ══════════════════════════════════════
+   Phase 4 — Orders & Driver Styles
+═══════════════════════════════════════ */
+
+/* ── Admin Stat Cards ── */
+.admin-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.admin-stat-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.admin-stat-icon { font-size: 18px; margin-bottom: 2px; }
+.admin-stat-num  { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.admin-stat-label { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── Employee Stat Row ── */
+.emp-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.emp-stat-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.emp-stat-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 6px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.emp-stat-num { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1.1; }
+.emp-stat-lbl { font-size: 10px; color: var(--text-secondary); margin-top: 3px; }
+
+/* ── Status Badges ── */
+.sbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sbadge-created  { background: #FEF3C7; color: #92400E; }
+.sbadge-progress { background: #EFF6FF; color: #1D4ED8; }
+.sbadge-done     { background: #ECFDF5; color: #065F46; }
+
+/* ── Invoice Input Row ── */
+.invoice-input-row {
+  display: flex;
+  gap: 8px;
+}
+.invoice-input-row input { flex: 1; }
+.btn-add-inv {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.inv-removable { display: inline-flex; align-items: center; gap: 4px; }
+.inv-removable button {
+  background: none;
+  border: none;
+  color: var(--primary-dark);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* ── Pharmacy Searchable Dropdown ── */
+.phar-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0; left: 0;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 500;
+}
+.phar-dropdown-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.phar-dropdown-item:last-child { border-bottom: none; }
+.phar-dropdown-item:hover { background: var(--primary-light); }
+.phar-dropdown-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.input-group { position: relative; }
+
+/* ── Count Row ── */
+.count-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.count-group label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.count-group select {
+  width: 100%;
+  padding: 8px 6px;
+  border: 1.5px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+}
+
+/* ── Tall Modal ── */
+.modal-sheet-tall {
+  max-height: 92vh;
+}
+
+/* ── Driver Order Cards ── */
+.driver-order-card { border-right: 4px solid var(--border); }
+.driver-order-card.order-in-progress { border-right-color: var(--primary); }
+
+.driver-action-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-progress  { background: var(--primary); color: #fff; }
+.btn-progress:hover  { background: var(--primary-dark); }
+.btn-delivered { background: var(--success); color: #fff; }
+.btn-delivered:hover { filter: brightness(0.92); }
+.driver-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ══ Delivery Confirm Modal ══ */
+.delivery-confirm-modal { max-height: 92vh; overflow-y: auto; }
+
+.delivery-modal-header {
+  padding: 4px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.delivery-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 4px;
+}
+.delivery-modal-pharmacy {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* شبكة الصور */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.photo-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+}
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-remove {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.photo-add-btn {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 2px dashed var(--primary);
+  background: var(--bg);
+  color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.photo-add-btn span:first-child { font-size: 28px; }
+.photo-add-btn:active { background: #e0f2fe; }
+
+/* اختيار مصدر الصورة */
+.photo-choice-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.photo-choice-btn {
+  flex: 1;
+  min-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: white;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  color: var(--primary);
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.photo-choice-btn span:first-child { font-size: 28px; }
+.photo-choice-btn:active { background: #e0f2fe; }
+.photo-choice-cancel {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  text-align: center;
+}
+
+/* فلتر تم التوصيل */
+.delivered-filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.delivered-filter-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: white;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.delivered-filter-btn.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+/* شريط التأكيدات المعلقة */
+.offline-pending-bar {
+  background: #fef3c7;
+  border-bottom: 2px solid #f59e0b;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  padding: 10px 16px;
+  text-align: center;
+  cursor: pointer;
+  direction: rtl;
+}
+.offline-pending-bar:active { background: #fde68a; }
+
+/* خطوة الإرسال */
+.delivery-submit-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  color: var(--primary);
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+/* ── Scrollable Bottom Tab Bar (8 tabs) ── */
+.bottom-tab-bar {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+.bottom-tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  min-width: 60px;
+  flex-shrink: 0;
+  padding: 8px 2px 10px;
+}
+.tab-icon { font-size: 20px; }
+.tab-label { font-size: 10px; }
+.empty-state p { font-size: 15px; }
+
+/* ── Archive Filter Box (Employee) ── */
+.arch-filter-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 4px;
+}
+
+/* ── Slim Order Card ── */
+.order-card-slim {
+  padding: 10px 12px;
+  border-right: 3px solid var(--primary);
+}
+.order-card-slim .order-card-header {
+  margin-bottom: 4px;
+}
+.order-card-slim .order-pharmacy {
+  font-size: 14px;
+  font-weight: 700;
+}
+.order-card-slim .order-invoices {
+  margin: 3px 0 4px;
+  gap: 4px;
+}
+.order-card-slim .invoice-chip {
+  font-size: 11px;
+  padding: 2px 7px;
+}
+.slim-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.6;
+}
+.slim-row span { display: flex; align-items: center; gap: 3px; }
+.slim-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.slim-btn {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  cursor: pointer;
+  background: transparent;
+  border: 1.5px solid;
+  transition: all 0.15s;
+}
+.slim-btn-edit  { color: var(--primary); border-color: var(--primary); }
+.slim-btn-edit:hover  { background: var(--primary); color: #fff; }
+.slim-btn-del   { color: var(--danger); border-color: var(--danger); }
+.slim-btn-del:hover   { background: var(--danger); color: #fff; }
+
+/* ══════════════════════════════════════
+   Barcode Scanner
+═══════════════════════════════════════ */
+
+/* زر الباركود بجانب حقل الفاتورة */
+.btn-scan {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary-dark);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+.btn-scan:active { opacity: 0.75; }
+
+/* overlay خلفية */
+.scanner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 600;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* صندوق السكانر */
+.scanner-box {
+  width: 100%;
+  background: #111;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow: hidden;
+  max-height: 90vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* شريط العنوان */
+.scanner-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px 10px;
+}
+.scanner-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+}
+.scanner-close {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.scanner-close:hover { background: rgba(255,255,255,0.25); }
+
+/* منطقة الفيديو */
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  overflow: hidden;
+}
+.scanner-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* الإطار المركزي */
+.scanner-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%;
+  height: 38%;
+  overflow: hidden;
+}
+
+/* الخط المتحرك */
+.scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary), 0 0 20px rgba(14,165,233,0.5);
+  animation: scan-move 1.8s ease-in-out infinite;
+}
+@keyframes scan-move {
+  0%   { top: 0; }
+  50%  { top: calc(100% - 3px); }
+  100% { top: 0; }
+}
+
+/* زوايا الإطار */
+.scanner-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--primary);
+  border-style: solid;
+}
+.scanner-corner-tl { top: 0; right: 0; border-width: 3px 0 0 3px; border-radius: 0 0 0 4px; }
+.scanner-corner-tr { top: 0; left:  0; border-width: 3px 3px 0 0; border-radius: 0 0 4px 0; }
+.scanner-corner-bl { bottom: 0; right: 0; border-width: 0 0 3px 3px; border-radius: 0 4px 0 0; }
+.scanner-corner-br { bottom: 0; left:  0; border-width: 0 3px 3px 0; border-radius: 4px 0 0 0; }
+
+/* تلميح */
+.scanner-hint {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 13px;
+  text-align: center;
+  padding: 12px 16px 16px;
+  font-family: var(--font);
+}
+
+/* capture body — بديل الكاميرا المباشرة */
+.scanner-capture-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 36px 24px 24px;
+}
+.scanner-capture-icon {
+  font-size: 64px;
+  line-height: 1;
+}
+.scanner-capture-hint {
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+  line-height: 1.6;
+  font-family: var(--font);
+  min-height: 44px;
+}
+.scanner-capture-btn {
+  width: 100%;
+  font-size: 16px;
+  padding: 14px 20px;
+  margin-top: 4px;
+}
+
+/* رسالة خطأ الكاميرا */
+.scanner-error-msg {
+  padding: 40px 24px;
+  text-align: center;
+  color: #fff;
+  font-family: var(--font);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ======================================================
+   BarcodeScanner — ماسح حيّ داخل التطبيق
+   ====================================================== */
+.bs-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.bs-modal {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: #111;
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bs-close {
+  position: absolute; top: 12px; left: 14px; z-index: 10;
+  background: rgba(255,255,255,0.18); color: #fff;
+  border: none; border-radius: 50%;
+  width: 36px; height: 36px; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.bs-close:hover { background: rgba(255,255,255,.3); }
+
+/* حاوية الفيديو */
+.bs-video-wrap {
+  position: relative; width: 100%; aspect-ratio: 4/3; background: #000;
+}
+.bs-video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* رسائل المركز (loading / error) */
+.bs-center-msg {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; color: #fff; font-size: 14px;
+  font-family: var(--font); text-align: center; padding: 24px;
+}
+.bs-err-msg { background: rgba(0,0,0,.75); }
+.bs-spinner {
+  width: 36px; height: 36px;
+  border-top-color: #00ff88 !important;
+  border-color: rgba(255,255,255,.2) !important;
+}
+
+/* ── إطار الاستهداف (Reticle) ── */
+.bs-reticle {
+  position: absolute; inset: 0; pointer-events: none;
+}
+/* ظل شفاف خارج منطقة الإطار */
+.bs-reticle::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.35);
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><rect width='100%' height='100%' fill='white'/><rect x='14%' y='22%' width='72%' height='56%' rx='6' fill='black'/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><rect width='100%' height='100%' fill='white'/><rect x='14%' y='22%' width='72%' height='56%' rx='6' fill='black'/></svg>");
+}
+/* زوايا الإطار */
+.rc {
+  position: absolute;
+  width: 28px; height: 28px;
+  border-color: #00ff88; border-style: solid;
+}
+.rc-tl { top: 22%; left: 14%; border-width: 3px 0 0 3px; border-radius: 5px 0 0 0; }
+.rc-tr { top: 22%; right: 14%; border-width: 3px 3px 0 0; border-radius: 0 5px 0 0; }
+.rc-bl { bottom: 22%; left: 14%; border-width: 0 0 3px 3px; border-radius: 0 0 0 5px; }
+.rc-br { bottom: 22%; right: 14%; border-width: 0 3px 3px 0; border-radius: 0 0 5px 0; }
+/* خط المسح المتحرك */
+.bs-scan-line {
+  position: absolute;
+  left: 14%; right: 14%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ff88, transparent);
+  box-shadow: 0 0 8px #00ff88aa;
+  animation: bs-scan 1.8s ease-in-out infinite;
+  top: 22%;
+}
+@keyframes bs-scan {
+  0%   { top: 22%; opacity: 1; }
+  48%  { top: 78%; opacity: 1; }
+  49%  { top: 78%; opacity: 0; }
+  50%  { top: 22%; opacity: 0; }
+  51%  { top: 22%; opacity: 1; }
+  100% { top: 22%; opacity: 1; }
+}
+
+/* ── وميض النجاح ── */
+.bs-found-flash {
+  position: absolute; inset: 0;
+  background: rgba(0, 200, 80, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  animation: bs-found .35s ease-out forwards;
+}
+.bs-found-icon { font-size: 72px; }
+@keyframes bs-found {
+  0%   { opacity: 0; transform: scale(.7); }
+  60%  { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ── تلميح أسفل الفيديو ── */
+.bs-hint {
+  padding: 14px 20px 18px;
+  text-align: center;
+  color: rgba(255,255,255,.8);
+  font-size: 14px; font-weight: 500;
+  font-family: var(--font);
+}
+
+/* ======================================================
+   PharmacistDashboard — بطاقة الطلبية
+   ====================================================== */
+.pharm-order-card {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pharm-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pharm-order-id {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.pharm-order-invoices {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.pharm-order-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* زر الاتصال بالسائق */
+.pharm-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+  transition: opacity 0.2s;
+}
+.pharm-call-btn:hover { opacity: 0.88; }
+
+/* ======================================================
+   شريط التقدم (progress bar) للطلبية
+   ====================================================== */
+.order-progress-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 6px 4px 2px;
+  position: relative;
+}
+
+/* الخط الخلفي */
+.progress-track {
+  position: absolute;
+  top: 19px;           /* وسط الدائرة (ارتفاع 32px / 2 = 16 + 3 padding) */
+  right: 28px;
+  left:  28px;
+  height: 3px;
+  background: #E2E8F0;
+  border-radius: 2px;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.progress-track-fill {
+  height: 100%;
+  background: linear-gradient(to left, var(--primary), var(--success));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 2px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-step.done .progress-dot {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.progress-step.current .progress-dot {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(14,165,233,0.18);
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(14,165,233,0.18); }
+  50%       { box-shadow: 0 0 0 9px rgba(14,165,233,0.06); }
+}
+
+.progress-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.progress-step.done .progress-label    { color: var(--success); font-weight: 700; }
+.progress-step.current .progress-label { color: var(--primary); font-weight: 700; }
+
+/* ======================================================
+   قسم الخريطة داخل بطاقة الطلبية
+   ====================================================== */
+.pharm-map-section {
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pharm-map-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* شارة "مباشر" */
+.map-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.map-live-badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #EF4444;
+  animation: blink-red 1.2s ease-in-out infinite;
+}
+
+@keyframes blink-red {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* إشعار HTTPS */
+.map-https-notice {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #92400E;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* في انتظار موقع السائق */
+.map-waiting {
+  background: var(--bg);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+/* ======================================================
+   الأرشيف — بطاقة الطلبية المسلّمة
+   ====================================================== */
+.archive-order-card {
+  background: var(--bg-white);
+  border: 1.5px solid #D1FAE5;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.archive-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.archive-order-info { flex: 1; }
+
+.archive-order-invoice {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.archive-order-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* صور التسليم */
+.archive-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.archive-photo-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.archive-photo-thumb:hover { transform: scale(1.08); }
+
+/* مردود / ملاحظات */
+.archive-return-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.archive-return-badge.yes {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+.archive-return-badge.no {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+.archive-notes {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+/* فلتر الأرشيف */
+.archive-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.archive-filter-bar label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.archive-filter-bar input[type="date"] {
+  flex: 1;
+  min-width: 120px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+.archive-filter-bar .btn-search {
+  padding: 7px 16px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+/* رسالة لا يوجد أرشيف */
+.archive-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scanner-error-msg p { font-size: 15px; line-height: 1.6; }
+
+/* ======================================================
+   DriversPage — تتبع الموقع
+   ====================================================== */
+
+/* نقطة حمراء نابضة جانب اسم السائق النشط */
+.driver-live-dot {
+  display: inline-block;
+  width:  8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: blink-red 1.2s ease-in-out infinite;
+}
+
+/* شارة "X على الطريق" في العنوان */
+.drivers-live-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* زر 📍 عندما يكون السائق نشطاً */
+.btn-icon-live {
+  background: #FEF2F2 !important;
+  color: #EF4444 !important;
+  border-color: #FECACA !important;
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════
+   نظام الشكاوى (Complaints)
+   ══════════════════════════════════════════ */
+
+/* بطاقة ملخص الشكاوى في لوحة الإدارة */
+.complaints-summary-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFF7ED;
+  border: 1.5px solid #FED7AA;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.complaints-summary-card:active {
+  transform: scale(0.98);
+}
+.complaints-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.complaints-summary-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.complaints-summary-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #92400E;
+}
+.complaints-summary-sub {
+  font-size: 12px;
+  color: #B45309;
+  margin-top: 2px;
+}
+.complaints-count-badge {
+  background: #EF4444;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+}
+
+/* شريط فلتر الشكاوى */
+.complaint-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* بطاقة الشكوى */
+.complaint-card {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  padding: 14px;
+  margin-bottom: 10px;
+  border-right: 4px solid var(--border);
+}
+.complaint-card-new        { border-right-color: var(--warning); }
+.complaint-card-processing { border-right-color: var(--primary); }
+.complaint-card-resolved   { border-right-color: var(--success); }
+
+.complaint-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.complaint-pharmacy {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.complaint-phone {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.complaint-status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.complaint-message {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.55;
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.complaint-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.complaint-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* صندوق إرسال الشكوى (صيدلي) */
+.complaint-send-box {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+/* رسالة نجاح الإرسال */
+.success-msg {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  color: #166534;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* تبويب الشكاوى — أيقونة حمراء */
+.tab-btn-complaints .tab-icon {
+  filter: sepia(1) saturate(6) hue-rotate(315deg) brightness(0.9);
+}
+.tab-btn-complaints.active .tab-icon {
+  filter: sepia(1) saturate(8) hue-rotate(315deg) brightness(0.85);
+}
+.tab-btn-complaints .tab-label {
+  color: #DC2626;
+}
+.tab-btn-complaints.active .tab-label {
+  color: #B91C1C;
+}
+
+/* شارة العدد فوق أيقونة التبويب */
+.tab-badge {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  background: #EF4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 3px;
+  pointer-events: none;
+}

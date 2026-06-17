@@ -1,0 +1,1 @@
+version:0.0.1 configurations:[name:riyada-connect] configurations:[runtimeExecutable:npm] configurations:[runtimeArgs:[run] configurations:[dev]] configurations:[port:5176]

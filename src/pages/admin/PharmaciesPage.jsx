@@ -120,7 +120,10 @@ export default function PharmaciesPage() {
   async function deletePharmacy() {
     setDeleting(true);
     try {
-      // احذف أولاً الـ profile المرتبط بهذه الصيدلية
+      // احذف الطلبيات المرتبطة أولاً (foreign key constraint)
+      await supabase.from('orders').delete().eq('pharmacy_id', editing.id);
+
+      // احذف الـ profile المرتبط بهذه الصيدلية
       const { data: profRow } = await supabase
         .from('profiles')
         .select('id')
@@ -128,13 +131,11 @@ export default function PharmaciesPage() {
         .maybeSingle();
 
       if (profRow?.id) {
-        // احذف حساب الدخول من Auth (يحذف الجلسات تلقائياً)
         await adminDeleteUser(profRow.id).catch(() => {});
-        // احذف الـ profile
         await supabase.from('profiles').delete().eq('id', profRow.id);
       }
 
-      // ثم احذف الصيدلية
+      // احذف الصيدلية
       const { error: pharErr } = await supabase.from('pharmacies').delete().eq('id', editing.id);
       if (pharErr) throw pharErr;
 

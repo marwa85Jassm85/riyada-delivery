@@ -4,8 +4,8 @@
  * المتغيرات: SUPABASE_URL و SUPABASE_SERVICE_KEY (بدون VITE_)
  */
 
-const SUPABASE_URL     = process.env.SUPABASE_URL;
-const SERVICE_KEY      = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_SERVICE_KEY;
 
 function authHeaders() {
   return {

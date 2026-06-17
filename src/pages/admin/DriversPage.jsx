@@ -20,6 +20,8 @@ export default function DriversPage() {
   const [error,           setError]           = useState('');
   const [confirmDelete,   setConfirmDelete]   = useState(false);
   const [deleting,        setDeleting]        = useState(false);
+  const [showPass,        setShowPass]        = useState(false);
+  const [showNewPass,     setShowNewPass]     = useState(false);
 
   // تتبع الموقع
   const [driverLocations, setDriverLocations] = useState({}); // { [driver_id]: {lat,lng} }
@@ -311,12 +313,16 @@ export default function DriversPage() {
                       </div>
                       <div className="input-group">
                         <label>كلمة المرور *</label>
-                        <input
-                          type="password"
-                          value={form.password}
-                          onChange={e => setField('password', e.target.value)}
-                          placeholder="6 أحرف على الأقل"
-                        />
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type={showPass ? 'text' : 'password'}
+                            value={form.password}
+                            onChange={e => setField('password', e.target.value)}
+                            placeholder="6 أحرف على الأقل"
+                            style={{ paddingLeft: 44 }}
+                          />
+                          <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--text-secondary)', padding: '4px' }}>{showPass ? '🙈' : '👁️'}</button>
+                        </div>
                       </div>
                       <div className="modal-divider" />
                     </>
@@ -362,12 +368,16 @@ export default function DriversPage() {
                   {editing && (
                     <div className="input-group">
                       <label>كلمة مرور جديدة</label>
-                      <input
-                        type="password"
-                        value={form.newPassword}
-                        onChange={e => setField('newPassword', e.target.value)}
-                        placeholder="اتركها فارغة إذا لا تريد تغييرها"
-                      />
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type={showNewPass ? 'text' : 'password'}
+                          value={form.newPassword}
+                          onChange={e => setField('newPassword', e.target.value)}
+                          placeholder="اتركها فارغة إذا لا تريد تغييرها"
+                          style={{ paddingLeft: 44 }}
+                        />
+                        <button type="button" onClick={() => setShowNewPass(s => !s)} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--text-secondary)', padding: '4px' }}>{showNewPass ? '🙈' : '👁️'}</button>
+                      </div>
                     </div>
                   )}
                 </div>

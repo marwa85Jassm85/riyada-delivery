@@ -18,6 +18,7 @@ export default function PharmaciesPage() {
   const [error, setError]                 = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting]           = useState(false);
+  const [showPass, setShowPass]           = useState(false);
 
   useEffect(() => { fetchPharmacies(); fetchRegions(); }, []);
 
@@ -227,7 +228,10 @@ export default function PharmaciesPage() {
                       </div>
                       <div className="input-group">
                         <label>كلمة المرور *</label>
-                        <input type="password" value={form.password} onChange={e => setField('password', e.target.value)} placeholder="6 أحرف على الأقل" />
+                        <div style={{ position: 'relative' }}>
+                          <input type={showPass ? 'text' : 'password'} value={form.password} onChange={e => setField('password', e.target.value)} placeholder="6 أحرف على الأقل" style={{ paddingLeft: 44 }} />
+                          <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--text-secondary)', padding: '4px' }}>{showPass ? '🙈' : '👁️'}</button>
+                        </div>
                       </div>
                       <div className="modal-divider" />
                     </>

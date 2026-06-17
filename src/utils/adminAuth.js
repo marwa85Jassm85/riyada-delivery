@@ -1,63 +1,42 @@
 /**
  * adminAuth.js
- * عمليات Auth الإدارية عبر Supabase REST API مباشرة
- * (بديل supabaseAdmin SDK الذي يُحجب في المتصفح منذ v2.107)
+ * عمليات Auth الإدارية عبر Vercel Serverless Function (api/admin-user.js)
+ * المفتاح السري يبقى في السيرفر فقط
  */
-import { supabaseUrl, supabaseServiceKey } from '../supabase';
 
-function authHeaders() {
-  return {
-    'apikey':        supabaseServiceKey,
-    'Authorization': `Bearer ${supabaseServiceKey}`,
-    'Content-Type':  'application/json',
-  };
-}
-
-/** إنشاء مستخدم جديد في Auth */
-export async function adminCreateUser({ email, password }) {
-  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+async function callAdminApi(body) {
+  const res = await fetch('/api/admin-user', {
     method:  'POST',
-    headers: authHeaders(),
-    body:    JSON.stringify({ email, password, email_confirm: true }),
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
   });
   const data = await res.json();
   if (!res.ok) {
     const msg = data.msg || data.message || data.error_description || data.error || '';
-    if (
-      msg.toLowerCase().includes('already registered') ||
-      msg.toLowerCase().includes('already been registered') ||
-      msg.toLowerCase().includes('already exists')
-    ) {
-      throw new Error('اسم المستخدم هذا مستخدم مسبقاً، جرّب اسماً آخر');
-    }
-    throw new Error(msg || 'فشل إنشاء الحساب');
+    throw new Error(msg || 'فشلت العملية');
   }
-  return data; // { id, email, ... }
+  return data;
 }
 
-/** حذف مستخدم من Auth (يستتبع حذف الجلسات) */
-export async function adminDeleteUser(userId) {
-  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
-    method:  'DELETE',
-    headers: authHeaders(),
-  });
-  if (!res.ok) {
-    let msg = 'فشل حذف حساب الدخول';
-    try { const d = await res.json(); msg = d.message || d.msg || msg; } catch (_) {}
-    throw new Error(msg);
+/** إنشاء مستخدم جديد في Auth */
+export async function adminCreateUser({ email, password }) {
+  try {
+    return await callAdminApi({ action: 'create', email, password });
+  } catch (e) {
+    const msg = e.message.toLowerCase();
+    if (msg.includes('already registered') || msg.includes('already exists')) {
+      throw new Error('اسم المستخدم هذا مستخدم مسبقاً، جرّب اسماً آخر');
+    }
+    throw e;
   }
+}
+
+/** حذف مستخدم من Auth */
+export async function adminDeleteUser(userId) {
+  await callAdminApi({ action: 'delete', userId });
 }
 
 /** تغيير كلمة مرور مستخدم موجود */
 export async function adminUpdatePassword(userId, password) {
-  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
-    method:  'PUT',
-    headers: authHeaders(),
-    body:    JSON.stringify({ password }),
-  });
-  if (!res.ok) {
-    let msg = 'فشل تغيير كلمة المرور';
-    try { const d = await res.json(); msg = d.message || d.msg || msg; } catch (_) {}
-    throw new Error(msg);
-  }
+  await callAdminApi({ action: 'update_password', userId, password });
 }

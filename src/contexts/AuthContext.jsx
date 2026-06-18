@@ -18,13 +18,18 @@ export function AuthProvider({ children }) {
   const [loading, setLoading]           = useState(true);
 
   async function fetchProfile(userId) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    setUserProfile(data);
-    return data;
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      setUserProfile(data);
+      return data;
+    } catch (_) {
+      setUserProfile(null);
+      return null;
+    }
   }
 
   async function login(username, password, role) {
@@ -43,19 +48,35 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    let active = true;
+
     // onAuthStateChange يُطلق INITIAL_SESSION فوراً بالجلسة الحالية
-    // لذا نكتفي به ولا نحتاج getSession بشكل منفصل (يمنع double-fetch)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // مهم جداً: لا نستخدم await لاستدعاء Supabase مباشرة داخل هذا الـ callback
+    // لأنه يمسك قفل المصادقة → استدعاء آخر داخله يسبب deadlock وتجمّد على شاشة التحميل
+    // الحل: نؤجّل جلب الملف الشخصي بـ setTimeout(0) حتى يتحرر القفل
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user ?? null);
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        setTimeout(() => {
+          if (!active) return;
+          fetchProfile(session.user.id).finally(() => {
+            if (active) setLoading(false);
+          });
+        }, 0);
       } else {
         setUserProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // أمان إضافي: لو تأخر كل شيء لأي سبب، نُنهي التحميل بعد 8 ثوانٍ
+    const safety = setTimeout(() => { if (active) setLoading(false); }, 8000);
+
+    return () => {
+      active = false;
+      clearTimeout(safety);
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

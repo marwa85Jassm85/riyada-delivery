@@ -4,7 +4,17 @@
  * المتغيرات: SUPABASE_URL و SUPABASE_SERVICE_KEY (بدون VITE_)
  */
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+// الرابط عام (غير سري) — نختار أول قيمة صحيحة تبدأ بـ http، مع fallback ثابت
+// هذا يتجاهل أي قيمة خاطئة في متغيرات البيئة تلقائياً
+function pickUrl() {
+  const candidates = [process.env.SUPABASE_URL, process.env.VITE_SUPABASE_URL];
+  for (const c of candidates) {
+    if (c && c.startsWith('http')) return c.replace(/\/+$/, '');
+  }
+  return 'https://mzfhwxctiovsgpwyfevj.supabase.co';
+}
+
+const SUPABASE_URL = pickUrl();
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_SERVICE_KEY;
 
 function authHeaders() {

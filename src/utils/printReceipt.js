@@ -60,7 +60,7 @@ export function printOrderReceipt(order, copies = 1) {
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
       body{font-family:'Amiri','Traditional Arabic','Times New Roman',serif;background:#fff;color:#000}
-      .page{width:100mm;padding:4mm 5mm;page-break-after:always}
+      .page{width:100mm;min-height:150mm;padding:5mm 5mm;page-break-after:always}
       .header{text-align:center;margin-bottom:4px}
       .logo{height:80px;width:80px;object-fit:contain;margin-bottom:8px}
       .company{font-size:22px;font-weight:700;color:#000;margin-bottom:2px}
@@ -80,7 +80,7 @@ export function printOrderReceipt(order, copies = 1) {
       .lbl{font-weight:700;color:#000}
       .val{font-weight:400;color:#000;margin-right:4px}
       .line.inv .val{font-weight:700;font-size:19px;letter-spacing:.5px}
-      @media print{@page{size:100mm auto;margin:0}body{margin:0}}
+      @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
     </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 
   const win = window.open('', '_blank', 'width=420,height=640');

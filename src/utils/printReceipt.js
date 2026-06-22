@@ -88,6 +88,7 @@ export function printOrderReceipt(order, copies = 1) {
       .line:last-child{border-bottom:none}
       .lbl{font-weight:700;color:#000}
       .val{font-weight:400;color:#000;margin-right:4px}
+      .line.inv{line-height:1.55}
       .line.inv .val{font-weight:700;font-size:17px;letter-spacing:.5px}
       .footer{margin-top:10px;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:10px;font-weight:300;line-height:1.5;color:#666}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}

@@ -59,8 +59,8 @@ export function printOrderReceipt(order, copies = 1) {
         ${order.notes ? line('ملاحظات', order.notes) : ''}
       </div>
       <div class="footer">
-        <div>جميع الحقوق محفوظة © 2026</div>
-        <div>برمجة وتصميم قسم تكنولوجيا المعلومات — MΔRWΔN</div>
+        <div>جميع الحقوق محفوظه @2026</div>
+        <div>برمجة وتصميم قسم تكنلوجيا المعلومات MΔRWΔN</div>
       </div>
     </div>`;
 
@@ -69,27 +69,27 @@ export function printOrderReceipt(order, copies = 1) {
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
       body{font-family:'Amiri','Traditional Arabic','Times New Roman',serif;background:#fff;color:#000}
-      .page{width:100mm;min-height:150mm;padding:5mm 5mm;page-break-after:always;display:flex;flex-direction:column}
-      .header{text-align:center;margin-bottom:4px}
-      .logo{height:80px;width:80px;object-fit:contain;margin-bottom:8px}
-      .company{font-size:22px;font-weight:700;color:#000;margin-bottom:2px}
-      .sub{font-size:16px;font-weight:700;color:#000;margin-bottom:5px}
-      .rule{border-top:2px solid #000;margin:5px 0}
-      .doc-title{font-size:19px;font-weight:700;color:#000;letter-spacing:1px;margin:5px 0}
-      .body{margin-top:4px}
+      .page{width:100mm;padding:5mm 5mm;page-break-after:always}
+      .header{text-align:center;margin-bottom:3px}
+      .logo{height:80px;width:80px;object-fit:contain;margin-bottom:5px}
+      .company{font-size:21px;font-weight:700;color:#000;margin-bottom:2px}
+      .sub{font-size:15px;font-weight:700;color:#000;margin-bottom:3px}
+      .rule{border-top:2px solid #000;margin:3px 0}
+      .doc-title{font-size:18px;font-weight:700;color:#000;letter-spacing:1px;margin:3px 0}
+      .body{margin-top:3px}
       .line{
         text-align:right;
         border-bottom:1.5px solid #000;
-        padding:8px 2px;
-        font-size:18px;
+        padding:4px 2px;
+        font-size:16px;
         color:#000;
-        line-height:1.6;
+        line-height:1.3;
       }
       .line:last-child{border-bottom:none}
       .lbl{font-weight:700;color:#000}
       .val{font-weight:400;color:#000;margin-right:4px}
-      .line.inv .val{font-weight:700;font-size:19px;letter-spacing:.5px}
-      .footer{margin-top:auto;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:10px;font-weight:300;line-height:1.5;color:#666}
+      .line.inv .val{font-weight:700;font-size:17px;letter-spacing:.5px}
+      .footer{margin-top:10px;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:10px;font-weight:300;line-height:1.5;color:#666}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
     </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 

@@ -134,6 +134,10 @@ export default function AdminDashboard() {
   const [formPharSearch, setFormPharSearch]     = useState('');
   const [formPharOpen, setFormPharOpen]         = useState(false);
   const [showScanner, setShowScanner]           = useState(false);
+  const [refreshing, setRefreshing]             = useState(false);
+  const [showPrintModal, setShowPrintModal]     = useState(false);
+  const [printTargetOrder, setPrintTargetOrder] = useState(null);
+  const [printCopies, setPrintCopies]           = useState(1);
   const pharDropRef      = useRef(null);
   // نحتاج ref لـ regionFilter حتى تستخدمه callbacks الـ Realtime الثابتة (تجنب stale closure)
   const regionFilterRef  = useRef('all');
@@ -142,6 +146,21 @@ export default function AdminDashboard() {
   useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
+
+  // ── تحديث بيانات التبويب الحالي يدوياً ──
+  async function refreshCurrentTab() {
+    setRefreshing(true);
+    try {
+      await fetchRefData();
+      await fetchComplaintsCount();
+      if (activeTab === 'stats')              await fetchOrders();
+      else if (activeTab === 'deleted')       await fetchDeletedOrders();
+      else if (activeTab === 'archive')       { setArchFetched(false); await fetchArchive(); }
+      else if (activeTab === 'delivery_perf') { setPerfFetched(false); await fetchPerfOrders(); }
+      else if (activeTab === 'complaints')    await fetchComplaints();
+    } catch (e) { console.error('refresh error:', e); }
+    finally { setRefreshing(false); }
+  }
 
   useEffect(() => {
     fetchRegions();
@@ -402,7 +421,16 @@ export default function AdminDashboard() {
     setArchDeleting(null);
   }
 
-  // ── Order Edit / Delete ──
+  // ── Order Create / Edit / Delete ──
+  function openCreateOrder() {
+    setEditingOrder(null);
+    setEditForm(EMPTY_ORDER);
+    setFormPharSearch('');
+    setInvoiceInput('');
+    setEditError('');
+    setShowEditModal(true);
+  }
+
   function openEditOrder(order) {
     setEditingOrder(order);
     setEditForm({
@@ -467,7 +495,7 @@ export default function AdminDashboard() {
     setEditForm(f => ({ ...f, region_id: regionId, region_name: r?.name || '' }));
   }
 
-  async function saveEditOrder() {
+  async function saveEditOrder(withPrint = false) {
     setEditError('');
     const pending     = invoiceInput.trim();
     const allInvoices = pending && !editForm.invoice_numbers.includes(pending)
@@ -500,16 +528,106 @@ export default function AdminDashboard() {
         notes:           editForm.notes.trim() || null,
       };
 
-      const { error: e } = await supabase.from('orders').update(payload).eq('id', editingOrder.id);
-      if (e) throw new Error(e.message || 'فشل التعديل');
+      if (editingOrder) {
+        const { error: e } = await supabase.from('orders').update(payload).eq('id', editingOrder.id);
+        if (e) throw new Error(e.message || 'فشل التعديل');
+      } else {
+        const { error: e } = await supabase.from('orders').insert({
+          ...payload, status: 'created', created_by: userProfile?.id || null,
+        });
+        if (e) throw new Error(e.message || 'فشل الحفظ');
+      }
+
       playSuccess();
+      const printSnap = {
+        ...payload, invoice_numbers: allInvoices,
+        created_at: editingOrder?.created_at || new Date().toISOString(),
+      };
       closeEditModal();
       fetchOrders();
+      if (withPrint) {
+        setPrintTargetOrder(printSnap);
+        setPrintCopies(1);
+        setShowPrintModal(true);
+      }
     } catch (e) {
       setEditError(e.message || 'حدث خطأ غير متوقع');
     } finally {
       setSavingEdit(false);
     }
+  }
+
+  // ── طباعة وصل التوصيل (نفس تصميم الموظف) ──
+  function printOrderReceipt(order, copies = 1) {
+    const logoUrl  = `${window.location.origin}/logo.png`;
+    const invText  = (order.invoice_numbers || []).map(n => `#${n}`).join('&nbsp;&nbsp;&nbsp;');
+    const packages = [
+      order.carton_count > 0 ? `${order.carton_count} كارتون` : '',
+      order.bag_count    > 0 ? `${order.bag_count} كيس`      : '',
+      order.fridge_count > 0 ? `${order.fridge_count} براد`  : '',
+    ].filter(Boolean).join(' &nbsp;+&nbsp; ') || '—';
+    const date = formatDate(order.created_at || new Date().toISOString());
+
+    const row = (label, value, ltr = false) => `
+      <tr>
+        <td class="lbl">${label}</td>
+        <td class="val"${ltr ? ' style="direction:ltr;text-align:left;"' : ''}>${value || '—'}</td>
+      </tr>`;
+
+    const pageHTML = `
+      <div class="page">
+        <div class="header">
+          <img src="${logoUrl}" class="logo" onerror="this.style.display='none'" />
+          <div class="company">رياده كونكت</div>
+          <div class="sub">نظام إدارة توصيل الطلبيات</div>
+          <div class="divider"></div>
+          <div class="doc-title">وصل توصيل</div>
+        </div>
+        <table>
+          ${row('الصيدلية', order.pharmacy_name)}
+          ${order.region_name ? row('المنطقة', order.region_name) : ''}
+          ${row('أرقام الفواتير', invText, true)}
+          ${row('الكميات', packages)}
+          ${row('السائق', order.driver_name)}
+          ${row('التاريخ', date)}
+          ${order.notes ? row('ملاحظات', order.notes) : ''}
+        </table>
+        <div class="footer-box">
+          <div class="footer-line">رياده كونكت — نظام إدارة توصيل الطلبيات</div>
+          <div class="footer-credit">MaRWaN @2026 &nbsp;|&nbsp; قسم تكنلوجيا المعلومات — مذخر الريادة</div>
+        </div>
+      </div>`;
+
+    const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/>
+      <title>وصل توصيل</title>
+      <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#fff;color:#111;font-size:14px}
+        .page{width:210mm;min-height:297mm;padding:18mm 20mm;page-break-after:always;position:relative}
+        .header{text-align:center;margin-bottom:20px}
+        .logo{height:80px;width:80px;object-fit:contain;margin-bottom:8px}
+        .company{font-size:22px;font-weight:700;color:#0EA5E9;margin-bottom:2px}
+        .sub{font-size:13px;color:#555;margin-bottom:4px}
+        .dept{font-size:12px;color:#888;margin-bottom:12px}
+        .divider{border:none;border-top:2.5px solid #0EA5E9;width:80px;margin:0 auto 10px}
+        .doc-title{font-size:16px;font-weight:700;color:#333;letter-spacing:1px;margin-bottom:4px}
+        table{width:100%;border-collapse:collapse;margin-top:8px}
+        tr{border-bottom:1px solid #eee}
+        tr:last-child{border-bottom:none}
+        td{padding:11px 8px;vertical-align:top}
+        .lbl{font-weight:600;color:#666;width:36%;font-size:13px;white-space:nowrap}
+        .val{color:#111;font-size:14px}
+        .footer-box{position:absolute;bottom:18mm;left:20mm;right:20mm;text-align:center;border-top:1px dashed #ccc;padding-top:12px}
+        .footer-line{font-size:12px;color:#999;margin-bottom:4px}
+        .footer-credit{font-size:11px;color:#bbb;direction:ltr}
+        @media print{@page{size:A4;margin:0}body{margin:0}.page{padding:15mm 18mm}}
+      </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
+
+    const win = window.open('', '_blank', 'width=794,height=1123');
+    if (!win) { alert('السماح للنوافذ المنبثقة في المتصفح حتى تشتغل الطباعة'); return; }
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => { win.focus(); win.print(); }, 600);
   }
 
   async function softDeleteOrder(order) {
@@ -554,7 +672,18 @@ export default function AdminDashboard() {
             <div className="top-bar-subtitle">{userProfile?.name || 'مروان'}</div>
           </div>
         </div>
-        <button className="btn-outline" onClick={handleLogout}>خروج</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            className="btn-outline"
+            onClick={refreshCurrentTab}
+            disabled={refreshing}
+            title="تحديث"
+            style={{ padding: '6px 10px', fontSize: 16, lineHeight: 1 }}
+          >
+            <span style={{ display: 'inline-block', animation: refreshing ? 'spin 0.7s linear infinite' : 'none' }}>🔄</span>
+          </button>
+          <button className="btn-outline" onClick={handleLogout}>خروج</button>
+        </div>
       </div>
 
       {/* ── Page Content ── */}
@@ -1019,6 +1148,11 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* ── زر إنشاء طلبية (مثل الموظف) ── */}
+          <button className="btn-primary" style={{ width: '100%', margin: '4px 0 10px' }} onClick={openCreateOrder}>
+            ➕ إنشاء طلبية جديدة
+          </button>
+
           {/* ── فلتر الحالة ── */}
           <div className="status-filter-bar">
             {STATUS_FILTERS.map(s => (
@@ -1106,13 +1240,13 @@ export default function AdminDashboard() {
         <div className="modal-overlay" onClick={closeEditModal}>
           <div className="modal-sheet modal-sheet-tall" onClick={e => e.stopPropagation()}>
             <div className="modal-handle" />
-            <div className="modal-title">✏️ تعديل الطلبية</div>
+            <div className="modal-title">{editingOrder ? '✏️ تعديل الطلبية' : '📦 إنشاء طلبية جديدة'}</div>
             <div className="modal-form">
 
               {/* تاريخ الإنشاء */}
               <div className="input-group">
                 <label>تاريخ الإنشاء</label>
-                <input readOnly value={formatDate(editingOrder?.created_at)}
+                <input readOnly value={editingOrder ? formatDate(editingOrder.created_at) : formatDate(new Date().toISOString())}
                   style={{ background: 'var(--bg)', color: 'var(--text-secondary)', cursor: 'default' }} />
               </div>
 
@@ -1206,10 +1340,45 @@ export default function AdminDashboard() {
 
             {editError && <div className="error-msg" style={{ margin: '8px 0' }}>{editError}</div>}
             <div className="modal-actions">
-              <button className="btn-primary" onClick={saveEditOrder} disabled={savingEdit}>
-                {savingEdit ? 'جاري الحفظ...' : '💾 حفظ التعديل'}
+              <button className="btn-primary" onClick={() => saveEditOrder(false)} disabled={savingEdit}>
+                {savingEdit ? 'جاري الحفظ...' : (editingOrder ? '💾 حفظ التعديل' : '💾 حفظ')}
+              </button>
+              <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={() => saveEditOrder(true)} disabled={savingEdit}>
+                🖨️ حفظ مع طباعة
               </button>
               <button className="btn-outline" onClick={closeEditModal}>إلغاء</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ Print Modal ══ */}
+      {showPrintModal && printTargetOrder && (
+        <div className="modal-overlay" onClick={() => setShowPrintModal(false)}>
+          <div className="modal-sheet" onClick={e => e.stopPropagation()} style={{ maxHeight: '50vh' }}>
+            <div className="modal-handle" />
+            <div className="modal-title">🖨️ طباعة وصل التوصيل</div>
+            <div className="modal-form">
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 12 }}>
+                📦 {printTargetOrder.pharmacy_name}
+              </div>
+              <div className="input-group">
+                <label>عدد النسخ</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <button className="btn-outline" style={{ width: 40, padding: '6px 0', fontSize: 18 }}
+                    onClick={() => setPrintCopies(c => Math.max(1, c - 1))}>−</button>
+                  <span style={{ fontSize: 22, fontWeight: 700, minWidth: 32, textAlign: 'center' }}>{printCopies}</span>
+                  <button className="btn-outline" style={{ width: 40, padding: '6px 0', fontSize: 18 }}
+                    onClick={() => setPrintCopies(c => Math.min(10, c + 1))}>+</button>
+                </div>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-primary" style={{ background: 'var(--success)' }}
+                onClick={() => { printOrderReceipt(printTargetOrder, printCopies); setShowPrintModal(false); }}>
+                🖨️ طباعة {printCopies} {printCopies === 1 ? 'نسخة' : 'نسخ'}
+              </button>
+              <button className="btn-outline" onClick={() => setShowPrintModal(false)}>إلغاء</button>
             </div>
           </div>
         </div>

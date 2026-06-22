@@ -42,6 +42,8 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    // امسح البيانات المحفوظة أولاً حتى لا يعيد الدخول التلقائي تسجيل الدخول فوراً
+    try { localStorage.removeItem('riyada_saved_creds'); } catch (_) {}
     await supabase.auth.signOut();
     setCurrentUser(null);
     setUserProfile(null);

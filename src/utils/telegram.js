@@ -8,6 +8,8 @@
  * ثم يُدخله الأدمن في بيانات الصيدلية (telegram_chat_id).
  */
 
+import { invoiceTelegramLines } from './invoices';
+
 const TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '';
 const BASE  = `https://api.telegram.org/bot${TOKEN}`;
 
@@ -89,7 +91,7 @@ function fmtDuration(mins) {
 export async function sendDeliveryConfirmation(p) {
   const warehouseChat = import.meta.env.VITE_TELEGRAM_WAREHOUSE_CHAT || '';
   const pharmChatId   = p.pharmacyChatId || null;
-  const invText       = (p.invoiceNumbers || []).map(n => `#${n}`).join(' ');
+  const invLines      = invoiceTelegramLines(p.invoiceNumbers);
   const deliveredAt   = p.deliveredAt || new Date().toISOString();
   const mins          = calcMins(p.createdAt, deliveredAt);
   const duration      = fmtDuration(mins);
@@ -97,7 +99,7 @@ export async function sendDeliveryConfirmation(p) {
   // ── رسالة الصيدلية ──
   const pharmMsg = [
     `✅ تم توصيل طلبيتكم`,
-    `📋 الفواتير: ${invText || '—'}`,
+    ...invLines,
     `🚗 السائق: ${p.driverName || '—'}`,
     `🕐 وقت التوصيل: ${fmtTime(deliveredAt)}`,
     p.hasReturn ? `⚠️ يوجد مردودات — يرجى المراجعة` : null,
@@ -111,7 +113,7 @@ export async function sendDeliveryConfirmation(p) {
     `✅ تم التوصيل`,
     ``,
     `🏥 الصيدلية: ${p.pharmacyName || '—'}`,
-    `📋 الفواتير: ${invText || '—'}`,
+    ...invLines,
     `🚗 السائق: ${p.driverName || '—'}`,
     `🕐 التوصيل: ${fmtDateTime(deliveredAt)}`,
     duration ? `⏳ المدة: ${duration}` : '',

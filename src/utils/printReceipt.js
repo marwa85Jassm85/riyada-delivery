@@ -4,6 +4,8 @@
  * مشترك بين لوحة الموظف ولوحة الأدمن حتى يبقى التصميم موحّداً.
  */
 
+import { classifyInvoices } from './invoices';
+
 function fmtDate(iso) {
   if (!iso) return '—';
   const d     = new Date(iso);
@@ -17,8 +19,8 @@ function fmtDate(iso) {
 export function printOrderReceipt(order, copies = 1) {
   const logoUrl = `${window.location.origin}/logo.png`;
 
-  // أرقام الفواتير: تبدأ من اليمين ومفصولة بفاصلة
-  const invText = (order.invoice_numbers || []).join('، ') || '—';
+  // تصنيف الفواتير حسب رمز المخزن (1 أدوية / 2 عامة / بدون رمز)
+  const { meds, general, other } = classifyInvoices(order.invoice_numbers);
 
   const packages = [
     order.carton_count > 0 ? `${order.carton_count} كارتون` : '',
@@ -47,11 +49,18 @@ export function printOrderReceipt(order, copies = 1) {
       <div class="body">
         ${line('الصيدلية', order.pharmacy_name)}
         ${order.region_name ? line('المنطقة', order.region_name) : ''}
-        ${line('الفواتير', invText, 'inv')}
+        ${meds.length    ? line('فواتير الأدوية', meds.join('، '), 'inv') : ''}
+        ${general.length ? line('فواتير العامة', general.join('، '), 'inv') : ''}
+        ${other.length   ? line('الفواتير', other.join('، '), 'inv') : ''}
+        ${(!meds.length && !general.length && !other.length) ? line('الفواتير', '—', 'inv') : ''}
         ${line('الكميات', packages)}
         ${line('السائق', order.driver_name)}
         ${line('التاريخ', date)}
         ${order.notes ? line('ملاحظات', order.notes) : ''}
+      </div>
+      <div class="footer">
+        <div>جميع الحقوق محفوظة © 2026</div>
+        <div>برمجة وتصميم قسم تكنولوجيا المعلومات — MΔRWΔN</div>
       </div>
     </div>`;
 
@@ -60,7 +69,7 @@ export function printOrderReceipt(order, copies = 1) {
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
       body{font-family:'Amiri','Traditional Arabic','Times New Roman',serif;background:#fff;color:#000}
-      .page{width:100mm;min-height:150mm;padding:5mm 5mm;page-break-after:always}
+      .page{width:100mm;min-height:150mm;padding:5mm 5mm;page-break-after:always;display:flex;flex-direction:column}
       .header{text-align:center;margin-bottom:4px}
       .logo{height:80px;width:80px;object-fit:contain;margin-bottom:8px}
       .company{font-size:22px;font-weight:700;color:#000;margin-bottom:2px}
@@ -80,6 +89,7 @@ export function printOrderReceipt(order, copies = 1) {
       .lbl{font-weight:700;color:#000}
       .val{font-weight:400;color:#000;margin-right:4px}
       .line.inv .val{font-weight:700;font-size:19px;letter-spacing:.5px}
+      .footer{margin-top:auto;padding-top:8px;border-top:2px solid #000;text-align:center;font-size:12.5px;font-weight:600;line-height:1.7;color:#000}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
     </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 

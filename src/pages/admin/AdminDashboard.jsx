@@ -9,6 +9,7 @@ import DriversPage     from './DriversPage';
 import EmployeesPage   from './EmployeesPage';
 import RegionsPage     from './RegionsPage';
 import BarcodeScanner  from '../../components/BarcodeScanner';
+import { printOrderReceipt } from '../../utils/printReceipt';
 
 const COUNTS = Array.from({ length: 51 }, (_, i) => i);
 
@@ -555,79 +556,6 @@ export default function AdminDashboard() {
     } finally {
       setSavingEdit(false);
     }
-  }
-
-  // ── طباعة وصل التوصيل (نفس تصميم الموظف) ──
-  function printOrderReceipt(order, copies = 1) {
-    const logoUrl  = `${window.location.origin}/logo.png`;
-    const invText  = (order.invoice_numbers || []).map(n => `#${n}`).join('&nbsp;&nbsp;&nbsp;');
-    const packages = [
-      order.carton_count > 0 ? `${order.carton_count} كارتون` : '',
-      order.bag_count    > 0 ? `${order.bag_count} كيس`      : '',
-      order.fridge_count > 0 ? `${order.fridge_count} براد`  : '',
-    ].filter(Boolean).join(' &nbsp;+&nbsp; ') || '—';
-    const date = formatDate(order.created_at || new Date().toISOString());
-
-    const row = (label, value, ltr = false) => `
-      <tr>
-        <td class="lbl">${label}</td>
-        <td class="val"${ltr ? ' style="direction:ltr;text-align:left;"' : ''}>${value || '—'}</td>
-      </tr>`;
-
-    const pageHTML = `
-      <div class="page">
-        <div class="header">
-          <img src="${logoUrl}" class="logo" onerror="this.style.display='none'" />
-          <div class="company">رياده كونكت</div>
-          <div class="sub">نظام إدارة توصيل الطلبيات</div>
-          <div class="divider"></div>
-          <div class="doc-title">وصل توصيل</div>
-        </div>
-        <table>
-          ${row('الصيدلية', order.pharmacy_name)}
-          ${order.region_name ? row('المنطقة', order.region_name) : ''}
-          ${row('أرقام الفواتير', invText, true)}
-          ${row('الكميات', packages)}
-          ${row('السائق', order.driver_name)}
-          ${row('التاريخ', date)}
-          ${order.notes ? row('ملاحظات', order.notes) : ''}
-        </table>
-        <div class="footer-box">
-          <div class="footer-line">رياده كونكت — نظام إدارة توصيل الطلبيات</div>
-          <div class="footer-credit">MaRWaN @2026 &nbsp;|&nbsp; قسم تكنلوجيا المعلومات — مذخر الريادة</div>
-        </div>
-      </div>`;
-
-    const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/>
-      <title>وصل توصيل</title>
-      <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#fff;color:#111;font-size:14px}
-        .page{width:210mm;min-height:297mm;padding:18mm 20mm;page-break-after:always;position:relative}
-        .header{text-align:center;margin-bottom:20px}
-        .logo{height:80px;width:80px;object-fit:contain;margin-bottom:8px}
-        .company{font-size:22px;font-weight:700;color:#0EA5E9;margin-bottom:2px}
-        .sub{font-size:13px;color:#555;margin-bottom:4px}
-        .dept{font-size:12px;color:#888;margin-bottom:12px}
-        .divider{border:none;border-top:2.5px solid #0EA5E9;width:80px;margin:0 auto 10px}
-        .doc-title{font-size:16px;font-weight:700;color:#333;letter-spacing:1px;margin-bottom:4px}
-        table{width:100%;border-collapse:collapse;margin-top:8px}
-        tr{border-bottom:1px solid #eee}
-        tr:last-child{border-bottom:none}
-        td{padding:11px 8px;vertical-align:top}
-        .lbl{font-weight:600;color:#666;width:36%;font-size:13px;white-space:nowrap}
-        .val{color:#111;font-size:14px}
-        .footer-box{position:absolute;bottom:18mm;left:20mm;right:20mm;text-align:center;border-top:1px dashed #ccc;padding-top:12px}
-        .footer-line{font-size:12px;color:#999;margin-bottom:4px}
-        .footer-credit{font-size:11px;color:#bbb;direction:ltr}
-        @media print{@page{size:A4;margin:0}body{margin:0}.page{padding:15mm 18mm}}
-      </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
-
-    const win = window.open('', '_blank', 'width=794,height=1123');
-    if (!win) { alert('السماح للنوافذ المنبثقة في المتصفح حتى تشتغل الطباعة'); return; }
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => { win.focus(); win.print(); }, 600);
   }
 
   async function softDeleteOrder(order) {

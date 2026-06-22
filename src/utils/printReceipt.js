@@ -41,7 +41,6 @@ export function printOrderReceipt(order, copies = 1) {
       <div class="header">
         <img src="${logoUrl}" class="logo" onerror="this.style.display='none'" />
         <div class="company">مذخر ادوية الريادة</div>
-        <div class="sub">برنامج رياده كونكت للتوصيل</div>
         <div class="rule"></div>
         <div class="doc-title">وصل التوصيل</div>
         <div class="rule"></div>
@@ -58,10 +57,7 @@ export function printOrderReceipt(order, copies = 1) {
         ${line('التاريخ', date)}
         ${order.notes ? line('ملاحظات', order.notes) : ''}
       </div>
-      <div class="footer">
-        <div>جميع الحقوق محفوظه @2026</div>
-        <div>برمجة وتصميم قسم تكنلوجيا المعلومات MΔRWΔN</div>
-      </div>
+      <div class="footer">جميع الحقوق محفوظه @2026 — برمجة وتصميم قسم تكنلوجيا المعلومات MΔRWΔN</div>
     </div>`;
 
   const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/>
@@ -90,7 +86,7 @@ export function printOrderReceipt(order, copies = 1) {
       .val{font-weight:400;color:#000;margin-right:4px}
       .line.inv{line-height:1.55}
       .line.inv .val{font-weight:700;font-size:17px;letter-spacing:.5px}
-      .footer{margin-top:10px;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:10px;font-weight:300;line-height:1.5;color:#666}
+      .footer{margin-top:10px;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:9px;font-weight:300;line-height:1.4;color:#666;white-space:nowrap}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
     </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 

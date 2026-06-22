@@ -89,7 +89,7 @@ export function printOrderReceipt(order, copies = 1) {
       .lbl{font-weight:700;color:#000}
       .val{font-weight:400;color:#000;margin-right:4px}
       .line.inv .val{font-weight:700;font-size:19px;letter-spacing:.5px}
-      .footer{margin-top:auto;padding-top:8px;border-top:2px solid #000;text-align:center;font-size:12.5px;font-weight:600;line-height:1.7;color:#000}
+      .footer{margin-top:auto;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:10px;font-weight:300;line-height:1.5;color:#666}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
     </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 

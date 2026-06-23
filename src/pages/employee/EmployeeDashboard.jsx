@@ -7,6 +7,16 @@ import { requestNotifyPermission, showNotify } from '../../utils/notify';
 import BarcodeScanner from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
 
+// شبكة أمان: لو تعلّق أي استدعاء حفظ، نُظهر رسالة بدل التحميل اللانهائي
+function withTimeout(promise, ms = 20000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('تعذّر الحفظ — تأكد من الاتصال بالإنترنت وحاول مجدداً')), ms)
+    ),
+  ]);
+}
+
 const TABS = [
   { id: 'orders',     icon: '📦', label: 'الطلبيات'  },
   { id: 'archive',    icon: '📁', label: 'الأرشيف'   },
@@ -290,10 +300,10 @@ export default function EmployeeDashboard() {
         notes: orderForm.notes.trim() || null,
       };
       if (editingOrder) {
-        const { error: e } = await supabase.from('orders').update(payload).eq('id', editingOrder.id);
+        const { error: e } = await withTimeout(supabase.from('orders').update(payload).eq('id', editingOrder.id));
         if (e) throw new Error(e.message || 'فشل التعديل');
       } else {
-        const { error: e } = await supabase.from('orders').insert({ ...payload, status: 'created', created_by: userProfile?.id || null });
+        const { error: e } = await withTimeout(supabase.from('orders').insert({ ...payload, status: 'created', created_by: userProfile?.id || null }));
         if (e) throw new Error(e.message || 'فشل الحفظ');
       }
       playSuccess();
@@ -473,17 +483,17 @@ export default function EmployeeDashboard() {
         notes:           orderForm.notes.trim() || null,
       };
       if (editingOrder) {
-        const { error: e } = await supabase.from('orders').update(payload).eq('id', editingOrder.id);
+        const { error: e } = await withTimeout(supabase.from('orders').update(payload).eq('id', editingOrder.id));
         if (e) {
           const msg = e.message || e.details || e.hint || JSON.stringify(e);
           throw new Error(msg || 'فشل التعديل');
         }
       } else {
-        const { error: e } = await supabase.from('orders').insert({
+        const { error: e } = await withTimeout(supabase.from('orders').insert({
           ...payload,
           status:     'created',
           created_by: userProfile?.id || null,
-        });
+        }));
         if (e) {
           const msg = e.message || e.details || e.hint || JSON.stringify(e);
           throw new Error(msg || 'فشل الحفظ');

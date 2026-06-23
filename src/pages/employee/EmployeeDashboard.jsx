@@ -6,16 +6,7 @@ import { playSuccess, playDelete, playAlert } from '../../utils/sound';
 import { requestNotifyPermission, showNotify } from '../../utils/notify';
 import BarcodeScanner from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
-
-// شبكة أمان: لو تعلّق أي استدعاء حفظ، نُظهر رسالة بدل التحميل اللانهائي
-function withTimeout(promise, ms = 20000) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('تعذّر الحفظ — تأكد من الاتصال بالإنترنت وحاول مجدداً')), ms)
-    ),
-  ]);
-}
+import { withTimeout } from '../../utils/async';
 
 const TABS = [
   { id: 'orders',     icon: '📦', label: 'الطلبيات'  },

@@ -10,6 +10,7 @@ import EmployeesPage   from './EmployeesPage';
 import RegionsPage     from './RegionsPage';
 import BarcodeScanner  from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
+import { withTimeout } from '../../utils/async';
 
 const COUNTS = Array.from({ length: 51 }, (_, i) => i);
 
@@ -530,12 +531,12 @@ export default function AdminDashboard() {
       };
 
       if (editingOrder) {
-        const { error: e } = await supabase.from('orders').update(payload).eq('id', editingOrder.id);
+        const { error: e } = await withTimeout(supabase.from('orders').update(payload).eq('id', editingOrder.id));
         if (e) throw new Error(e.message || 'فشل التعديل');
       } else {
-        const { error: e } = await supabase.from('orders').insert({
+        const { error: e } = await withTimeout(supabase.from('orders').insert({
           ...payload, status: 'created', created_by: userProfile?.id || null,
-        });
+        }));
         if (e) throw new Error(e.message || 'فشل الحفظ');
       }
 

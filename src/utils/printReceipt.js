@@ -97,7 +97,8 @@ export function printOrderReceipt(order, copies = 1) {
     frame = document.createElement('iframe');
     frame.id = '__riyada_print_frame__';
     frame.setAttribute('aria-hidden', 'true');
-    frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+    // مقاس حقيقي خارج الشاشة: ضروري ليُحسب ارتفاع المحتوى بدقة (يعتمد عليه التصغير التلقائي)
+    frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:110mm;height:297mm;border:0;';
     document.body.appendChild(frame);
   }
   const fdoc = frame.contentWindow.document;

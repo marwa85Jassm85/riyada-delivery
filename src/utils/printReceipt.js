@@ -88,29 +88,42 @@ export function printOrderReceipt(order, copies = 1) {
       .line.inv .val{font-weight:700;font-size:17px;letter-spacing:.5px}
       .footer{margin-top:10px;padding-top:6px;border-top:1px solid #999;text-align:center;font-size:9px;font-weight:300;line-height:1.4;color:#666;white-space:nowrap}
       @media print{@page{size:100mm 150mm;margin:0}body{margin:0}}
-    </style></head><body>${Array(copies).fill(pageHTML).join('')}
-    <script>
-      (function(){
-        function fit(){
-          var MAX = 149 * 96 / 25.4;
-          var pages = document.querySelectorAll('.page');
-          for (var i=0;i<pages.length;i++){
-            var vals = pages[i].querySelectorAll('.line.inv .val');
-            if (!vals.length) continue;
-            var size = 17, guard = 0;
-            while (pages[i].offsetHeight > MAX && size > 8 && guard < 60){
-              size -= 0.5; guard++;
-              for (var j=0;j<vals.length;j++){ vals[j].style.fontSize = size + 'px'; }
-            }
-          }
-        }
-        if (document.readyState === 'complete') fit(); else window.addEventListener('load', fit);
-      })();
-    </script></body></html>`;
+    </style></head><body>${Array(copies).fill(pageHTML).join('')}</body></html>`;
 
-  const win = window.open('', '_blank', 'width=420,height=640');
-  if (!win) { alert('السماح للنوافذ المنبثقة في المتصفح حتى تشتغل الطباعة'); return; }
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => { win.focus(); win.print(); }, 600);
+  // طباعة عبر iframe مخفي — يعمل على iOS Safari واختصار الشاشة الرئيسية
+  // (window.open محظور في الوضع المستقل على الآيفون)
+  let frame = document.getElementById('__riyada_print_frame__');
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.id = '__riyada_print_frame__';
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+    document.body.appendChild(frame);
+  }
+  const fdoc = frame.contentWindow.document;
+  fdoc.open();
+  fdoc.write(html);
+  fdoc.close();
+
+  // بعد رسم المحتوى: صغّر أرقام الفواتير إن لزم لتبقى ورقة واحدة، ثم اطبع
+  setTimeout(() => {
+    try {
+      const fwin = frame.contentWindow;
+      const MAX = 149 * 96 / 25.4;
+      fwin.document.querySelectorAll('.page').forEach((page) => {
+        const vals = page.querySelectorAll('.line.inv .val');
+        if (!vals.length) return;
+        let size = 17, guard = 0;
+        while (page.offsetHeight > MAX && size > 8 && guard < 60) {
+          size -= 0.5; guard++;
+          vals.forEach((v) => { v.style.fontSize = size + 'px'; });
+        }
+      });
+      fwin.focus();
+      fwin.print();
+    } catch (e) {
+      console.warn('print error:', e);
+      alert('تعذّرت الطباعة — جرّب فتح التطبيق من متصفح Safari مباشرة');
+    }
+  }, 450);
 }

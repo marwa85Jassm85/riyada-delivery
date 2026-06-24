@@ -34,6 +34,7 @@ export default function DriverDashboard() {
   const [updating, setUpdating] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [pendingCount, setPendingCount] = useState(0);
+  const [refreshing, setRefreshing]     = useState(false);
 
   // تم التوصيل
   const [deliveredOrders, setDeliveredOrders]   = useState([]);
@@ -264,6 +265,17 @@ export default function DriverDashboard() {
   async function refreshPendingCount() {
     const items = await getPending();
     setPendingCount(items.length);
+  }
+
+  // ── تحديث بيانات التبويب الحالي يدوياً ──
+  async function refreshCurrentTab() {
+    setRefreshing(true);
+    try {
+      if (activeTab === 'active')          { await fetchOrders(); refreshPendingCount(); }
+      else if (activeTab === 'delivered')  await fetchDeliveredOrders();
+      else if (activeTab === 'pharmacies') await fetchPharList();
+    } catch (e) { console.error('refresh error:', e); }
+    finally { setRefreshing(false); }
   }
 
   // ── معالجة قائمة الانتظار لما يرجع النت ──
@@ -580,6 +592,15 @@ export default function DriverDashboard() {
           }}>
             {isOnline ? '🟢 متصل' : '🟡 بدون نت'}
           </span>
+          <button
+            className="btn-outline"
+            onClick={refreshCurrentTab}
+            disabled={refreshing}
+            title="تحديث"
+            style={{ padding: '6px 10px', fontSize: 16, lineHeight: 1 }}
+          >
+            <span style={{ display: 'inline-block', animation: refreshing ? 'spin 0.7s linear infinite' : 'none' }}>🔄</span>
+          </button>
           <button className="btn-outline" onClick={handleLogout}>خروج</button>
         </div>
       </div>

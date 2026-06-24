@@ -87,6 +87,7 @@ export default function EmployeeDashboard() {
   const [formPharSearch, setFormPharSearch]         = useState('');
   const [formPharOpen, setFormPharOpen]             = useState(false);
   const [savingOrder, setSavingOrder]               = useState(false);
+  const [refreshing, setRefreshing]                 = useState(false);
   const [orderError, setOrderError]                 = useState('');
   const [confirmDeleteOrder, setConfirmDeleteOrder] = useState(null);
   const [showScanner, setShowScanner]               = useState(false);
@@ -101,6 +102,18 @@ export default function EmployeeDashboard() {
   const canLiveCamera  = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
+
+  // ── تحديث بيانات التبويب الحالي يدوياً ──
+  async function refreshCurrentTab() {
+    setRefreshing(true);
+    try {
+      if (activeTab === 'orders')          { await fetchOrders(); await fetchDeliveredToday(); }
+      else if (activeTab === 'archive')    await fetchArchive();
+      else if (activeTab === 'pharmacies') await fetchPharList();
+      else if (activeTab === 'drivers')    await fetchDrvList();
+    } catch (e) { console.error('refresh error:', e); }
+    finally { setRefreshing(false); }
+  }
 
   useEffect(() => { fetchOrders(); fetchRefData(); fetchDeliveredToday(); requestNotifyPermission(); }, []);
 
@@ -555,7 +568,18 @@ export default function EmployeeDashboard() {
             <div className="top-bar-subtitle">{userProfile?.name || 'مرحباً'}</div>
           </div>
         </div>
-        <button className="btn-outline" onClick={handleLogout}>خروج</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            className="btn-outline"
+            onClick={refreshCurrentTab}
+            disabled={refreshing}
+            title="تحديث"
+            style={{ padding: '6px 10px', fontSize: 16, lineHeight: 1 }}
+          >
+            <span style={{ display: 'inline-block', animation: refreshing ? 'spin 0.7s linear infinite' : 'none' }}>🔄</span>
+          </button>
+          <button className="btn-outline" onClick={handleLogout}>خروج</button>
+        </div>
       </div>
 
       <div className="page-content" style={{ paddingBottom: 80 }}>

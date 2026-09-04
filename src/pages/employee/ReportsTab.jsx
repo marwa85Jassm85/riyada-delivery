@@ -11,17 +11,18 @@ function fmtTimeOnly(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
-function packagesText(o) {
-  const parts = [];
-  if (o.carton_count > 0) parts.push(`${o.carton_count} كرتون`);
-  if (o.bag_count > 0)    parts.push(`${o.bag_count} كيس`);
-  return parts.join('، ') || '—';
+function fmtDuration(fromISO, toISO) {
+  if (!fromISO || !toISO) return '—';
+  const mins = Math.round((new Date(toISO) - new Date(fromISO)) / 60000);
+  if (mins < 0) return '—';
+  if (mins < 60) return `${mins} دقيقة`;
+  return `${Math.floor(mins / 60)} ساعة ${mins % 60} دقيقة`;
 }
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-const COLS = ['التاريخ', 'رقم الفاتورة', 'الصيدلية', 'الأكياس/الكراتين', 'البراد', 'الوقت', 'السائق', 'المردود', 'الملاحظات'];
+const COLS = ['التاريخ', 'رقم الفاتورة', 'الصيدلية', 'الأكياس', 'الكراتين', 'البراد', 'الوقت', 'السائق', 'المردود', 'الملاحظات', 'مدة التوصيل'];
 
 export default function ReportsTab() {
   const today = new Date().toISOString().slice(0, 10);
@@ -31,6 +32,7 @@ export default function ReportsTab() {
   const [rows, setRows]           = useState([]);
   const [loading, setLoading]     = useState(false);
   const [searched, setSearched]   = useState(false);
+  const [search, setSearch]       = useState('');
 
   const whName = warehouse === 'meds' ? 'مخزن الأدوية' : 'مخزن المواد العامة';
 
@@ -60,13 +62,15 @@ export default function ReportsTab() {
             num: n, missing: false,
             date:     fmtDateOnly(o.created_at),
             pharmacy: o.pharmacy_name || '—',
-            packages: packagesText(o),
+            bags:     o.bag_count > 0 ? String(o.bag_count) : '—',
+            cartons:  o.carton_count > 0 ? String(o.carton_count) : '—',
             fridge:   o.fridge_count > 0 ? String(o.fridge_count) : '—',
             time:     fmtTimeOnly(o.delivered_at),
             driver:   o.driver_name || '—',
             hasReturn: o.status === 'delivered' ? !!o.return_status : null,
             notes:    o.delivery_notes || '—',
             status:   o.status,
+            duration: o.status === 'delivered' ? fmtDuration(o.created_at, o.delivered_at) : '—',
           });
         }
       }
@@ -89,12 +93,12 @@ export default function ReportsTab() {
     }
   }
 
-  function printReport() {
-    if (!rows.length) return;
+  function printReport(list) {
+    if (!list.length) return;
     const logoUrl = `${window.location.origin}/logo.png`;
-    const rowsHtml = rows.map(r => r.missing
-      ? `<tr class="missing"><td>—</td><td>${r.num}</td><td colspan="7">☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td></tr>`
-      : `<tr class="${r.status === 'delivered' ? 'delivered' : 'pending'}"><td>${r.date}</td><td>${r.num}</td><td>${esc(r.pharmacy)}</td><td>${esc(r.packages)}</td><td>${r.fridge}</td><td>${r.time}</td><td>${esc(r.driver)}</td><td>${r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td><td>${esc(r.notes)}</td></tr>`
+    const rowsHtml = list.map(r => r.missing
+      ? `<tr class="missing"><td>—</td><td>${r.num}</td><td colspan="9">☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td></tr>`
+      : `<tr class="${r.status === 'delivered' ? 'delivered' : 'pending'}"><td>${r.date}</td><td>${r.num}</td><td>${esc(r.pharmacy)}</td><td>${r.bags}</td><td>${r.cartons}</td><td>${r.fridge}</td><td>${r.time}</td><td>${esc(r.driver)}</td><td>${r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td><td>${esc(r.notes)}</td><td>${esc(r.duration)}</td></tr>`
     ).join('');
 
     const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/><title>تقرير</title>
@@ -143,6 +147,13 @@ export default function ReportsTab() {
   const deliveredCount = rows.filter(r => !r.missing && r.status === 'delivered').length;
   const pendingCount   = rows.filter(r => !r.missing && r.status !== 'delivered').length;
 
+  const q = search.trim().toLowerCase();
+  const shown = q ? rows.filter(r =>
+    String(r.num).includes(q) || (!r.missing && (r.pharmacy || '').toLowerCase().includes(q))
+  ) : rows;
+
+  const td = (extra) => ({ padding: '7px 6px', ...extra });
+
   return (
     <div className="sub-page">
       {/* اختيار المخزن */}
@@ -171,13 +182,20 @@ export default function ReportsTab() {
         </button>
       </div>
 
+      {/* بحث باسم الصيدلية أو رقم الفاتورة */}
+      {rows.length > 0 && (
+        <input className="search-input" type="text" style={{ marginBottom: 8 }}
+          placeholder="🔍 بحث باسم الصيدلية أو رقم الفاتورة..."
+          value={search} onChange={e => setSearch(e.target.value)} />
+      )}
+
       {/* ملخص + طباعة */}
-      {searched && !loading && (
+      {searched && !loading && rows.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
           <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>🟩 موصّلة: {deliveredCount}</span>
           {pendingCount > 0 && <span style={{ fontSize: 13, color: '#a16207', fontWeight: 700 }}>🟨 لم تُوصَّل: {pendingCount}</span>}
           {missingCount > 0 && <span style={{ fontSize: 13, color: 'var(--danger)', fontWeight: 700 }}>🟥 مفقودة: {missingCount}</span>}
-          {rows.length > 0 && <button className="btn-outline" style={{ marginRight: 'auto', padding: '6px 14px' }} onClick={printReport}>🖨️ طباعة</button>}
+          <button className="btn-outline" style={{ marginRight: 'auto', padding: '6px 14px' }} onClick={() => printReport(shown)}>🖨️ طباعة</button>
         </div>
       )}
 
@@ -193,23 +211,25 @@ export default function ReportsTab() {
               <tr>{COLS.map(c => <th key={c} style={{ background: 'var(--bg)', padding: '8px 6px', borderBottom: '2px solid var(--border)', fontSize: 11, position: 'sticky', top: 0 }}>{c}</th>)}</tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => r.missing ? (
+              {shown.map((r, i) => r.missing ? (
                 <tr key={i} style={{ background: '#fee2e2', color: '#b91c1c', fontWeight: 700 }}>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>—</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.num}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'right' }} colSpan={7}>☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td>
+                  <td style={td({ textAlign: 'center' })}>—</td>
+                  <td style={td({ textAlign: 'center' })}>{r.num}</td>
+                  <td style={td({ textAlign: 'right' })} colSpan={9}>☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td>
                 </tr>
               ) : (
                 <tr key={i} style={{ background: r.status === 'delivered' ? '#dcfce7' : '#fef9c3', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.date}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center', fontWeight: 700 }}>{r.num}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'right' }}>{r.pharmacy}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.packages}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.fridge}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.time}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'right' }}>{r.driver}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'center', color: r.hasReturn ? 'var(--danger)' : 'inherit', fontWeight: r.hasReturn ? 700 : 400 }}>{r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td>
-                  <td style={{ padding: '7px 6px', textAlign: 'right' }}>{r.notes}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.date}</td>
+                  <td style={td({ textAlign: 'center', fontWeight: 700 })}>{r.num}</td>
+                  <td style={td({ textAlign: 'right' })}>{r.pharmacy}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.bags}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.cartons}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.fridge}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.time}</td>
+                  <td style={td({ textAlign: 'right' })}>{r.driver}</td>
+                  <td style={td({ textAlign: 'center', color: r.hasReturn ? 'var(--danger)' : 'inherit', fontWeight: r.hasReturn ? 700 : 400 })}>{r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td>
+                  <td style={td({ textAlign: 'right' })}>{r.notes}</td>
+                  <td style={td({ textAlign: 'center' })}>{r.duration}</td>
                 </tr>
               ))}
             </tbody>

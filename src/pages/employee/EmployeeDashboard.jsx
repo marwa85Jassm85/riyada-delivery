@@ -8,6 +8,7 @@ import BarcodeScanner from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
 import { withTimeout } from '../../utils/async';
 import ReportsTab from './ReportsTab';
+import AppUpdate from '../../components/AppUpdate';
 
 const TABS = [
   { id: 'orders',     icon: '📦', label: 'الطلبيات'  },
@@ -571,6 +572,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <AppUpdate />
           <button
             className="btn-outline"
             onClick={refreshCurrentTab}

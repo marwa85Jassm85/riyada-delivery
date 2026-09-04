@@ -7,6 +7,7 @@ import { requestNotifyPermission, showNotify } from '../../utils/notify';
 import { sendDeliveryConfirmation } from '../../utils/telegram';
 import { queueDelivery, getPending, removePending } from '../../utils/offlineDelivery';
 import { startTracking, stopTracking } from '../../utils/locationTracker';
+import AppUpdate from '../../components/AppUpdate';
 
 const DRIVER_TABS = [
   { id: 'active',     icon: '📦', label: 'طلبياتي'    },
@@ -592,6 +593,7 @@ export default function DriverDashboard() {
           }}>
             {isOnline ? '🟢 متصل' : '🟡 بدون نت'}
           </span>
+          <AppUpdate />
           <button
             className="btn-outline"
             onClick={refreshCurrentTab}

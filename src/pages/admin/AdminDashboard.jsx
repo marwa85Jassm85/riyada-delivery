@@ -11,6 +11,7 @@ import RegionsPage     from './RegionsPage';
 import BarcodeScanner  from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
 import { withTimeout } from '../../utils/async';
+import AppUpdate from '../../components/AppUpdate';
 
 const COUNTS = Array.from({ length: 51 }, (_, i) => i);
 
@@ -602,6 +603,7 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <AppUpdate />
           <button
             className="btn-outline"
             onClick={refreshCurrentTab}

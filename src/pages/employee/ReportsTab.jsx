@@ -66,6 +66,7 @@ export default function ReportsTab() {
             driver:   o.driver_name || '—',
             hasReturn: o.status === 'delivered' ? !!o.return_status : null,
             notes:    o.delivery_notes || '—',
+            status:   o.status,
           });
         }
       }
@@ -93,7 +94,7 @@ export default function ReportsTab() {
     const logoUrl = `${window.location.origin}/logo.png`;
     const rowsHtml = rows.map(r => r.missing
       ? `<tr class="missing"><td>—</td><td>${r.num}</td><td colspan="7">☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td></tr>`
-      : `<tr><td>${r.date}</td><td>${r.num}</td><td>${esc(r.pharmacy)}</td><td>${esc(r.packages)}</td><td>${r.fridge}</td><td>${r.time}</td><td>${esc(r.driver)}</td><td>${r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td><td>${esc(r.notes)}</td></tr>`
+      : `<tr class="${r.status === 'delivered' ? 'delivered' : 'pending'}"><td>${r.date}</td><td>${r.num}</td><td>${esc(r.pharmacy)}</td><td>${esc(r.packages)}</td><td>${r.fridge}</td><td>${r.time}</td><td>${esc(r.driver)}</td><td>${r.hasReturn === null ? '—' : (r.hasReturn ? 'نعم مردود' : 'لا')}</td><td>${esc(r.notes)}</td></tr>`
     ).join('');
 
     const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/><title>تقرير</title>
@@ -108,6 +109,8 @@ export default function ReportsTab() {
         table{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}
         th,td{border:1px solid #000;padding:4px 5px;text-align:center}
         th{background:#eee;font-weight:700}
+        tr.delivered td{background:#dcfce7}
+        tr.pending td{background:#fef9c3}
         tr.missing td{background:#fde2e2;color:#b91c1c;font-weight:700}
         @media print{@page{size:A4 landscape;margin:8mm}}
       </style></head><body>
@@ -136,8 +139,9 @@ export default function ReportsTab() {
     setTimeout(() => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch (e) { console.warn(e); } }, 500);
   }
 
-  const missingCount = rows.filter(r => r.missing).length;
-  const doneCount    = rows.length - missingCount;
+  const missingCount   = rows.filter(r => r.missing).length;
+  const deliveredCount = rows.filter(r => !r.missing && r.status === 'delivered').length;
+  const pendingCount   = rows.filter(r => !r.missing && r.status !== 'delivered').length;
 
   return (
     <div className="sub-page">
@@ -170,8 +174,9 @@ export default function ReportsTab() {
       {/* ملخص + طباعة */}
       {searched && !loading && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-          <span style={{ fontSize: 13 }}>✅ مسلّمة: <strong>{doneCount}</strong></span>
-          {missingCount > 0 && <span style={{ fontSize: 13, color: 'var(--danger)', fontWeight: 700 }}>⚠️ مفقودة: {missingCount}</span>}
+          <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>🟩 موصّلة: {deliveredCount}</span>
+          {pendingCount > 0 && <span style={{ fontSize: 13, color: '#a16207', fontWeight: 700 }}>🟨 لم تُوصَّل: {pendingCount}</span>}
+          {missingCount > 0 && <span style={{ fontSize: 13, color: 'var(--danger)', fontWeight: 700 }}>🟥 مفقودة: {missingCount}</span>}
           {rows.length > 0 && <button className="btn-outline" style={{ marginRight: 'auto', padding: '6px 14px' }} onClick={printReport}>🖨️ طباعة</button>}
         </div>
       )}
@@ -195,7 +200,7 @@ export default function ReportsTab() {
                   <td style={{ padding: '7px 6px', textAlign: 'right' }} colSpan={7}>☐ لم يُسلّم هذا الرقم التسلسلي إلى السائق</td>
                 </tr>
               ) : (
-                <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                <tr key={i} style={{ background: r.status === 'delivered' ? '#dcfce7' : '#fef9c3', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                   <td style={{ padding: '7px 6px', textAlign: 'center' }}>{r.date}</td>
                   <td style={{ padding: '7px 6px', textAlign: 'center', fontWeight: 700 }}>{r.num}</td>
                   <td style={{ padding: '7px 6px', textAlign: 'right' }}>{r.pharmacy}</td>

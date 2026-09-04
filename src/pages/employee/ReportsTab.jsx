@@ -135,15 +135,15 @@ export default function ReportsTab() {
     const html = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"/><title>تقرير</title>
       <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Amiri','Traditional Arabic','Times New Roman',serif;color:#000;padding:6mm}
+        body{font-family:'Amiri','Traditional Arabic','Times New Roman',serif;color:#000;padding:6mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
         .head{text-align:center;margin-bottom:8px}
         .logo{height:56px;width:56px;object-fit:contain}
         .company{font-size:18px;font-weight:700;margin-top:3px}
         .rtitle{font-size:14px;font-weight:700;margin-top:5px}
         .meta{font-size:11px;color:#333;margin-top:2px}
-        table{width:100%;border-collapse:collapse;margin-top:8px;font-size:9px;table-layout:fixed}
-        th,td{border:1px solid #000;padding:2px 3px;text-align:center;word-wrap:break-word;overflow-wrap:break-word}
-        th{background:#eee;font-weight:700}
+        table{border-collapse:collapse;margin:10px auto 0;font-size:13px}
+        th,td{border:1px solid #000;padding:5px 9px;text-align:center;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        th{background:#e5e5e5;font-weight:700}
         tr.delivered td{background:#dcfce7}
         tr.pending td{background:#fef9c3}
         tr.other td{background:#f1f2f4}

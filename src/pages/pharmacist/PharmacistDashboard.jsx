@@ -323,7 +323,7 @@ export default function PharmacistDashboard() {
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                         {o.delivery_photos.map((url, i) => (
                           <a key={i} href={url} target="_blank" rel="noreferrer">
-                            <img src={url} alt="" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+                            <img src={url} alt="" onError={e => { const a = e.currentTarget.closest('a'); if (a) a.style.display = 'none'; }} style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
                           </a>
                         ))}
                       </div>

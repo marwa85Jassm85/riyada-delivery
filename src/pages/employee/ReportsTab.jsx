@@ -28,7 +28,8 @@ function esc(s) {
 const COLS = ['التاريخ', 'رقم الفاتورة', 'الصيدلية', 'الأكياس', 'الكراتين', 'البراد', 'الوقت', 'السائق', 'المردود', 'الملاحظات', 'مدة التوصيل'];
 
 export default function ReportsTab() {
-  const today = new Date().toISOString().slice(0, 10);
+  const _now = new Date();
+  const today = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`;
   const [warehouse, setWarehouse] = useState('meds');
   const [from, setFrom]           = useState(today);
   const [to, setTo]               = useState(today);

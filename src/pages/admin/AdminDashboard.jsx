@@ -12,6 +12,7 @@ import BarcodeScanner  from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
 import { withTimeout } from '../../utils/async';
 import AppUpdate from '../../components/AppUpdate';
+import ReportsTab from '../employee/ReportsTab';
 
 const COUNTS = Array.from({ length: 51 }, (_, i) => i);
 
@@ -46,6 +47,7 @@ const STATUS_FILTERS = [
 
 const TABS = [
   { id: 'stats',         icon: '📊', label: 'الإحصائيات'  },
+  { id: 'reports',       icon: '🧾', label: 'التقارير'    },
   { id: 'delivery_perf', icon: '⏱️', label: 'وقت التوصيل' },
   { id: 'pharmacies',    icon: '🏥', label: 'الصيدليات'   },
   { id: 'archive',       icon: '📁', label: 'الأرشيف'     },
@@ -57,7 +59,7 @@ const TABS = [
 ];
 
 const TAB_TITLES = {
-  stats: 'لوحة الإدارة', delivery_perf: 'تقييم التوصيل',
+  stats: 'لوحة الإدارة', reports: 'التقارير', delivery_perf: 'تقييم التوصيل',
   pharmacies: 'الصيدليات', drivers: 'السواق',
   employees: 'الموظفون', regions: 'المناطق',
   archive: 'الأرشيف', deleted: 'المحذوفات',
@@ -621,6 +623,7 @@ export default function AdminDashboard() {
       <div className="page-content" style={{ paddingBottom: 80 }}>
 
         {activeTab === 'pharmacies' && <PharmaciesPage />}
+        {activeTab === 'reports'    && <ReportsTab />}
         {activeTab === 'drivers'    && <DriversPage />}
         {activeTab === 'employees'  && <EmployeesPage />}
         {activeTab === 'regions'    && <RegionsPage />}

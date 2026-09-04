@@ -7,9 +7,11 @@ import { requestNotifyPermission, showNotify } from '../../utils/notify';
 import BarcodeScanner from '../../components/BarcodeScanner';
 import { printOrderReceipt } from '../../utils/printReceipt';
 import { withTimeout } from '../../utils/async';
+import ReportsTab from './ReportsTab';
 
 const TABS = [
   { id: 'orders',     icon: '📦', label: 'الطلبيات'  },
+  { id: 'reports',    icon: '📊', label: 'التقارير'  },
   { id: 'archive',    icon: '📁', label: 'الأرشيف'   },
   { id: 'pharmacies', icon: '🏥', label: 'الصيدليات' },
   { id: 'drivers',    icon: '🚗', label: 'السواق'    },
@@ -546,7 +548,7 @@ export default function EmployeeDashboard() {
 
   const pharDropList = allPharmacies.filter(p => p.name.toLowerCase().includes(formPharSearch.toLowerCase()));
 
-  const TAB_TITLES = { orders: 'الطلبيات', archive: 'الأرشيف', pharmacies: 'الصيدليات', drivers: 'السواق' };
+  const TAB_TITLES = { orders: 'الطلبيات', reports: 'التقارير', archive: 'الأرشيف', pharmacies: 'الصيدليات', drivers: 'السواق' };
 
   return (
     <div className="dashboard role-employee">
@@ -812,6 +814,9 @@ export default function EmployeeDashboard() {
             )}
           </div>
         )}
+
+        {/* ══ التقارير ══ */}
+        {activeTab === 'reports' && <ReportsTab />}
       </div>
 
       {/* ── Bottom Tab Bar ── */}

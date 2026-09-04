@@ -68,7 +68,7 @@ export default function ReportsTab() {
           if (isNaN(n)) continue;
           map.set(n, {
             num: n, missing: false,
-            otherDate: o.created_at < displayFromISO, // موجود لكن بيوم خارج الفترة المحددة
+            otherDate: new Date(o.created_at) < new Date(displayFromISO), // موجود لكن بيوم خارج الفترة المحددة
             date:     fmtDateOnly(o.created_at),
             pharmacy: o.pharmacy_name || '—',
             bags:     o.bag_count > 0 ? String(o.bag_count) : '—',

@@ -291,34 +291,19 @@ export default function DriverDashboard() {
       let anyDelivered = false;
       for (const item of items) {
         try {
-          // رفع الصور
-          const photoUrls = [];
-          for (let i = 0; i < (item.photoBlobs || []).length; i++) {
-            const blob = item.photoBlobs[i];
-            const file = new File([blob], `photo_${i}.jpg`, { type: 'image/jpeg' });
-            const path = `${item.orderId}/${Date.now()}_${i}.jpg`;
-            const { error } = await supabase.storage
-              .from('delivery-photos').upload(path, file, { upsert: true });
-            if (!error) {
-              const { data } = supabase.storage.from('delivery-photos').getPublicUrl(path);
-              photoUrls.push(data.publicUrl);
-            }
-          }
-
-          // تحديث DB — إذا فشل نبقي العنصر في IndexedDB ونحاول في المرة القادمة
+          // تحديث DB — بدون صور (تُرسل للتلكرام مباشرة). إذا فشل نبقي العنصر ونعيد المحاولة
           const { error: updateErr } = await supabase.from('orders').update({
             status:          'delivered',
             delivered_at:    item.deliveredAt,
             return_status:   item.returnStatus === 'yes',
             delivery_notes:  item.deliveryNotes || null,
-            delivery_photos: photoUrls.length ? photoUrls : null,
           }).eq('id', item.orderId);
           if (updateErr) {
             console.warn('processPending: فشل تحديث DB، سيُعاد المحاولة:', updateErr.message);
             continue; // تخطّ — لا تحذف من IndexedDB ولا ترسل تيليجرام
           }
 
-          // إرسال تيليجرام
+          // إرسال تيليجرام بالصور مباشرة
           await sendDeliveryConfirmation({
             pharmacyChatId:  item.pharmacyChatId,
             pharmacyName:    item.pharmacyName,
@@ -328,7 +313,7 @@ export default function DriverDashboard() {
             deliveredAt:     item.deliveredAt,
             hasReturn:       item.returnStatus === 'yes',
             notes:           item.deliveryNotes,
-            photoUrls,
+            photoBlobs:      item.photoBlobs || [],
           });
 
           await removePending(item.orderId);
@@ -425,16 +410,6 @@ export default function DriverDashboard() {
     setPhotos(prev => prev.filter((_, i) => i !== idx));
   }
 
-  // رفع صورة لـ Supabase Storage
-  async function uploadPhoto(photo, orderId, idx) {
-    const ext  = photo.file.name.split('.').pop() || 'jpg';
-    const path = `${orderId}/${Date.now()}_${idx}.${ext}`;
-    const { error } = await supabase.storage
-      .from('delivery-photos').upload(path, photo.file, { upsert: true });
-    if (error) throw error;
-    const { data } = supabase.storage.from('delivery-photos').getPublicUrl(path);
-    return data.publicUrl;
-  }
 
   // ── تأكيد التوصيل — Optimistic UI (المودال يُغلق فوراً، العمل في الخلفية) ──
   async function confirmDelivery() {
@@ -507,25 +482,21 @@ export default function DriverDashboard() {
       }
 
       try {
-        // رفع الصور
-        let photoUrls = [];
-        if (photoSnap.length > 0) {
-          photoUrls = await Promise.all(
-            photoSnap.map((ph, idx) => uploadPhoto(ph, order.id, idx))
-          );
-        }
+        // حوّل الصور لـ blobs لإرسالها مباشرة للتلكرام (بدون رفعها لـ Supabase)
+        const photoBlobs = await Promise.all(
+          photoSnap.map(ph => fetch(ph.preview).then(r => r.blob()))
+        );
 
-        // حفظ في DB
+        // حفظ حالة التوصيل فقط — بدون صور في القاعدة
         const { error: dbErr } = await supabase.from('orders').update({
           status:          'delivered',
           delivered_at:    deliveredAt,
           return_status:   returnSnap === 'yes',
           delivery_notes:  notesSnap || null,
-          delivery_photos: photoUrls.length ? photoUrls : null,
         }).eq('id', order.id);
         if (dbErr) throw new Error(dbErr.message);
 
-        // إرسال تيليجرام
+        // إرسال تيليجرام بالصور مباشرة
         await sendDeliveryConfirmation({
           pharmacyChatId,
           pharmacyName:   order.pharmacy_name,
@@ -535,7 +506,7 @@ export default function DriverDashboard() {
           deliveredAt,
           hasReturn:      returnSnap === 'yes',
           notes:          notesSnap,
-          photoUrls,
+          photoBlobs,
         });
 
         showToast(`✅ تم التوصيل — ${order.pharmacy_name || ''}`, 'success', 5000);

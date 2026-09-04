@@ -23,17 +23,32 @@ async function checkResult(res, label) {
   }
 }
 
-/** إرسال صورة (رابط) مع نص */
-async function sendPhoto({ chatId, url, caption }) {
-  if (!TOKEN || !chatId) return;
+/** رفع صورة مباشرة (بلوب) لتيليجرام — يرجع file_id لإعادة استخدامه بلا رفع ثانٍ */
+async function sendPhotoBlob({ chatId, blob, caption }) {
+  if (!TOKEN || !chatId || !blob) return null;
+  try {
+    const fd = new FormData();
+    fd.append('chat_id', String(chatId));
+    if (caption) fd.append('caption', caption);
+    fd.append('photo', blob, 'photo.jpg');
+    const res  = await fetch(`${BASE}/sendPhoto`, { method: 'POST', body: fd });
+    const json = await res.json().catch(() => null);
+    if (!json || !json.ok) { console.warn('Telegram sendPhoto فشل:', json?.description); return null; }
+    const arr = json.result?.photo || [];
+    return arr.length ? arr[arr.length - 1].file_id : null;
+  } catch (e) { console.warn('Telegram photo blob:', e); return null; }
+}
+
+/** إرسال صورة عبر file_id (بلا إعادة رفع) */
+async function sendPhotoId({ chatId, fileId, caption }) {
+  if (!TOKEN || !chatId || !fileId) return;
   try {
     const res = await fetch(`${BASE}/sendPhoto`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, photo: url, caption }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, photo: fileId, caption }),
     });
-    if (!res.ok) await checkResult(res, 'sendPhoto');
-  } catch (e) { console.warn('Telegram photo:', e); }
+    if (!res.ok) await checkResult(res, 'sendPhoto(id)');
+  } catch (e) { console.warn('Telegram photo id:', e); }
 }
 
 /** إرسال نص فقط */
@@ -86,7 +101,7 @@ function fmtDuration(mins) {
  * @param {string}   p.deliveredAt     وقت التوصيل (ISO)
  * @param {boolean}  p.hasReturn       مردود؟
  * @param {string}   p.notes           ملاحظات
- * @param {string[]} p.photoUrls       روابط صور الفواتير
+ * @param {Blob[]}   p.photoBlobs      صور الفواتير (تُرسل مباشرة لتيليجرام بدون تخزين)
  */
 export async function sendDeliveryConfirmation(p) {
   const warehouseChat = import.meta.env.VITE_TELEGRAM_WAREHOUSE_CHAT || '';
@@ -121,30 +136,26 @@ export async function sendDeliveryConfirmation(p) {
     p.notes ? `📝 ملاحظات: ${p.notes}` : '',
   ].filter(Boolean).join('\n');
 
-  const firstPhoto  = p.photoUrls?.[0] || null;
-  const extraPhotos = p.photoUrls?.slice(1) || [];
+  const blobs = p.photoBlobs || [];
 
-  // أرسل للصيدلية
-  if (pharmChatId) {
-    if (firstPhoto) {
-      await sendPhoto({ chatId: pharmChatId, url: firstPhoto, caption: pharmMsg });
-      for (let i = 0; i < extraPhotos.length; i++) {
-        await sendPhoto({ chatId: pharmChatId, url: extraPhotos[i], caption: `صورة ${i + 2}` });
-      }
-    } else {
-      await sendText({ chatId: pharmChatId, text: pharmMsg });
-    }
+  // بلا صور: نص فقط للطرفين
+  if (blobs.length === 0) {
+    if (pharmChatId)   await sendText({ chatId: pharmChatId, text: pharmMsg });
+    if (warehouseChat) await sendText({ chatId: warehouseChat, text: warehouseMsg });
+    return;
   }
 
-  // أرسل لمجموعة المخزن
-  if (warehouseChat) {
-    if (firstPhoto) {
-      await sendPhoto({ chatId: warehouseChat, url: firstPhoto, caption: warehouseMsg });
-      for (let i = 0; i < extraPhotos.length; i++) {
-        await sendPhoto({ chatId: warehouseChat, url: extraPhotos[i], caption: `صورة ${i + 2}` });
-      }
-    } else {
-      await sendText({ chatId: warehouseChat, text: warehouseMsg });
+  // مع صور: أول صورة تحمل النص الكامل، الباقي «صورة N»
+  // نرفع الصورة مرة واحدة (للصيدلية) ونعيد استخدام file_id للمخزن — توفيراً للبيانات
+  for (let i = 0; i < blobs.length; i++) {
+    const blob     = blobs[i];
+    const pharmCap = i === 0 ? pharmMsg     : `صورة ${i + 1}`;
+    const whCap    = i === 0 ? warehouseMsg : `صورة ${i + 1}`;
+    let fileId = null;
+    if (pharmChatId) fileId = await sendPhotoBlob({ chatId: pharmChatId, blob, caption: pharmCap });
+    if (warehouseChat) {
+      if (fileId) await sendPhotoId({ chatId: warehouseChat, fileId, caption: whCap });
+      else        await sendPhotoBlob({ chatId: warehouseChat, blob, caption: whCap });
     }
   }
 }

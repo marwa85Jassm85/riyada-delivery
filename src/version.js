@@ -1,2 +1,2 @@
 // إصدار التطبيق — يظهر في أعلى اللوحات. ارفع الرقم يدوياً عند كل تحديث مهم.
-export const APP_VERSION = 'D.00210';
+export const APP_VERSION = 'D.00220';

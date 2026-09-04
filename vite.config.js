@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.png', 'logo.svg'],
+      includeAssets: ['favicon.svg', 'logo.png', 'logo.svg', 'app-icon-192.png', 'app-icon-512.png', 'app-icon-180.png'],
       manifest: {
         name: 'رياده كونكت',
         short_name: 'رياده كونكت',
@@ -23,8 +23,10 @@ export default defineConfig({
         lang: 'ar',
         dir: 'rtl',
         icons: [
-          { src: 'logo.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: 'logo.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+          { src: 'app-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'app-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'app-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'app-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
       workbox: {

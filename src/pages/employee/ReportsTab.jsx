@@ -38,6 +38,7 @@ export default function ReportsTab() {
   const [searched, setSearched]   = useState(false);
   const [search, setSearch]       = useState('');
   const [filter, setFilter]       = useState('all'); // all | delivered | pending | missing
+  const [debug, setDebug]         = useState('');
 
   const whName = warehouse === 'meds' ? 'مخزن الأدوية' : 'مخزن المواد العامة';
 
@@ -59,6 +60,15 @@ export default function ReportsTab() {
         .lte('created_at', toISO)
         .order('created_at');
       if (error) throw error;
+
+      // ── تشخيص مؤقت: نعرض ما جُلب فعلاً لمعرفة صيغة الفواتير ──
+      let cMeds = 0, cGen = 0, cOther = 0; const samples = [];
+      for (const o of (data || [])) {
+        const c = classifyInvoices(o.invoice_numbers);
+        cMeds += c.meds.length; cGen += c.general.length; cOther += c.other.length;
+        if (samples.length < 5) for (const inv of (o.invoice_numbers || [])) if (samples.length < 5) samples.push(String(inv));
+      }
+      setDebug(`🔧 مجلوبة: ${data?.length || 0} | أدوية:${cMeds} عامة:${cGen} أخرى:${cOther} | عيّنة: ${samples.join('  ،  ') || '—'}`);
 
       const map = new Map(); // رقم الفاتورة → بيانات الطلبية
       for (const o of (data || [])) {
@@ -219,6 +229,9 @@ export default function ReportsTab() {
           {loading ? 'جاري التحميل...' : '🔍 عرض التقرير'}
         </button>
       </div>
+
+      {/* تشخيص مؤقت */}
+      {debug && <div style={{ fontSize: 11, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', padding: '6px 8px', borderRadius: 6, marginBottom: 8, wordBreak: 'break-all', direction: 'ltr', textAlign: 'right' }}>{debug}</div>}
 
       {/* بحث */}
       {rows.length > 0 && (

@@ -47,7 +47,13 @@ export default function ReportsTab() {
     setFilter('all');
     try {
       const displayFrom    = from < START_DATE ? START_DATE : from;
-      const existFromISO   = new Date(START_DATE + 'T00:00:00').toISOString();
+      // نافذة رجوع 90 يوماً لكشف «بيوم آخر» بدل جلب كل شيء من الأرضية (تخفيف الحمل مع نمو البيانات)
+      // اليوم قريب من الأرضية فتُقصَّر إليها تلقائياً = نفس السلوك الحالي بلا أي تغيير
+      const _lb = new Date(displayFrom + 'T00:00:00');
+      _lb.setDate(_lb.getDate() - 90);
+      const lookbackStr    = `${_lb.getFullYear()}-${String(_lb.getMonth() + 1).padStart(2, '0')}-${String(_lb.getDate()).padStart(2, '0')}`;
+      const existFrom      = lookbackStr < START_DATE ? START_DATE : lookbackStr;
+      const existFromISO   = new Date(existFrom + 'T00:00:00').toISOString();
       const displayFromISO = new Date(displayFrom + 'T00:00:00').toISOString();
       const toISO          = new Date(to + 'T23:59:59').toISOString();
 

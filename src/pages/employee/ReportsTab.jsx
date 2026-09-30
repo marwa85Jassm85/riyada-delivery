@@ -38,7 +38,6 @@ export default function ReportsTab() {
   const [searched, setSearched]   = useState(false);
   const [search, setSearch]       = useState('');
   const [filter, setFilter]       = useState('all'); // all | delivered | pending | missing
-  const [debug, setDebug]         = useState('');
 
   const whName = warehouse === 'meds' ? 'مخزن الأدوية' : 'مخزن المواد العامة';
 
@@ -53,22 +52,22 @@ export default function ReportsTab() {
       const toISO          = new Date(to + 'T23:59:59').toISOString();
 
       // نجلب كل الطلبيات من الأرضية حتى نهاية الفترة — لكشف المفقود بدقة عبر كل الأيام
-      const { data, error } = await supabase.from('orders')
-        .select('invoice_numbers, pharmacy_name, carton_count, bag_count, fridge_count, driver_name, created_at, delivered_at, return_status, delivery_notes, status')
-        .is('deleted_at', null)
-        .gte('created_at', existFromISO)
-        .lte('created_at', toISO)
-        .order('created_at');
-      if (error) throw error;
-
-      // ── تشخيص مؤقت: نعرض ما جُلب فعلاً لمعرفة صيغة الفواتير ──
-      let cMeds = 0, cGen = 0, cOther = 0; const samples = [];
-      for (const o of (data || [])) {
-        const c = classifyInvoices(o.invoice_numbers);
-        cMeds += c.meds.length; cGen += c.general.length; cOther += c.other.length;
-        if (samples.length < 5) for (const inv of (o.invoice_numbers || [])) if (samples.length < 5) samples.push(String(inv));
+      // جلب كل الصفحات — Supabase يحدّ 1000 صف افتراضياً، فنكرّر حتى نجلب الكل
+      // (وإلا تُقطع طلبيات الأيام الأحدث ولا تظهر بالتقرير)
+      let data = [];
+      const PAGE = 1000;
+      for (let off = 0; ; off += PAGE) {
+        const { data: page, error } = await supabase.from('orders')
+          .select('invoice_numbers, pharmacy_name, carton_count, bag_count, fridge_count, driver_name, created_at, delivered_at, return_status, delivery_notes, status')
+          .is('deleted_at', null)
+          .gte('created_at', existFromISO)
+          .lte('created_at', toISO)
+          .order('created_at')
+          .range(off, off + PAGE - 1);
+        if (error) throw error;
+        data = data.concat(page || []);
+        if (!page || page.length < PAGE) break;
       }
-      setDebug(`🔧 مجلوبة: ${data?.length || 0} | أدوية:${cMeds} عامة:${cGen} أخرى:${cOther} | عيّنة: ${samples.join('  ،  ') || '—'}`);
 
       const map = new Map(); // رقم الفاتورة → بيانات الطلبية
       for (const o of (data || [])) {
@@ -229,9 +228,6 @@ export default function ReportsTab() {
           {loading ? 'جاري التحميل...' : '🔍 عرض التقرير'}
         </button>
       </div>
-
-      {/* تشخيص مؤقت */}
-      {debug && <div style={{ fontSize: 11, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', padding: '6px 8px', borderRadius: 6, marginBottom: 8, wordBreak: 'break-all', direction: 'ltr', textAlign: 'right' }}>{debug}</div>}
 
       {/* بحث */}
       {rows.length > 0 && (
